@@ -5,7 +5,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simple-Jabber-Bot", "Simple
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2C409011-3092-443B-AA36-2C88A7C63363}"
 	ProjectSection(SolutionItems) = preProject
+		lib\jabber-net.dll = lib\jabber-net.dll
 		lib\log4net.dll = lib\log4net.dll
+		lib\netlib.Dns.dll = lib\netlib.Dns.dll
+		lib\zlib.net.dll = lib\zlib.net.dll
 	EndProjectSection
 EndProject
 Global

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Temnenkov.SimpleJabberBot
 {
@@ -12,11 +9,21 @@ namespace Temnenkov.SimpleJabberBot
             Logger.Log(LogType.Info, "Starting in console mode");
 
             var bot = new Bot();
-            bot.Connect();
+            if (bot.Connect())
+            {
+                Logger.Log(LogType.Info, "Successfully connected");
 
-            Console.WriteLine("Type \"quit\" to end.");
-            while (!Console.ReadLine().Equals("quit", StringComparison.InvariantCultureIgnoreCase))
-                Console.WriteLine("Type \"quit\" to end.");
+                if (bot.JoinRoom(Settings.RoomJid))
+                {
+                    Console.WriteLine("Type \"quit\" to end.");
+                    while (!Console.ReadLine().Equals("quit", StringComparison.InvariantCultureIgnoreCase))
+                        Console.WriteLine("Type \"quit\" to end.");
+                }
+                else
+                    Logger.Log(LogType.Warn, "Fail join room");
+            }
+            else
+                Logger.Log(LogType.Warn, "Fail connect");
 
             Logger.Log(LogType.Info, "Quitting from console mode");
             bot.Disconnect();
