@@ -9,6 +9,7 @@ namespace Temnenkov.SimpleJabberBot
             Logger.Log(LogType.Info, "Starting in console mode");
 
             var bot = new Bot();
+            bot.Init();
             if (bot.Connect())
             {
                 Logger.Log(LogType.Info, "Successfully connected");
