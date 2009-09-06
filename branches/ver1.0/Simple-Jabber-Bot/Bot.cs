@@ -12,6 +12,7 @@ namespace Temnenkov.SimpleJabberBot
     {
         private JabberClient _client;
         private ConferenceManager _conferenceManager;
+        private MessageLogger messageLogger;
 
         internal Bot()
         {
@@ -29,11 +30,27 @@ namespace Temnenkov.SimpleJabberBot
 
             _conferenceManager = new ConferenceManager();
             _conferenceManager.Stream = _client;
+
+            messageLogger = new MessageLogger();
+        }
+
+        internal void Init()
+        {
+            messageLogger.Init();
         }
 
         void _client_OnMessage(object sender, Message msg)
         {
-            Logger.Log(LogType.Info, String.Format("Message received from {0}@{1}: {2}", msg.From.User, msg.From.Server, msg.Body));
+            switch (msg.Type)
+            {
+                case MessageType.groupchat:
+                    Logger.Log(LogType.Info, String.Format("Groupchat message received from resource {0} in room {1}: {2}", msg.From.Resource, msg.From.Bare, msg.Body));
+                    messageLogger.LogMessage(msg.From.Bare!= null ? msg.From.Bare : string.Empty, msg.From.Resource != null ? msg.From.Resource : string.Empty, msg.Body != null ? msg.Body : string.Empty);
+                    break;
+                default:
+                    Logger.Log(LogType.Info, String.Format("Message received from {0}@{1}: {2}", msg.From.User, msg.From.Server, msg.Body));
+                    break;
+            }
         }
 
         void _client_OnError(object sender, Exception ex)
