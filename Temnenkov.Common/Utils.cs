@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Temnenkov.SimpleJabberBot
+namespace Temnenkov.SJB.Common
 {
     public static class Utils
     {

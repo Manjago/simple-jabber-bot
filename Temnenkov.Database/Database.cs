@@ -3,10 +3,11 @@ using System.Data;
 using System.Data.SQLite;
 using System.IO;
 using System.Reflection;
+using Temnenkov.SJB.Common;
 
-namespace Temnenkov.SimpleJabberBot
+namespace Temnenkov.SJB.Database
 {
-    public class Database
+    public class Database: IDisposable
     {
 
         private SQLiteConnection _connection;

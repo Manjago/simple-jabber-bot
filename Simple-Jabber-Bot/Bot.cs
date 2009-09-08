@@ -150,3 +150,9 @@ namespace Temnenkov.SimpleJabberBot
 
     }
 }
+
+//toDo external Application for unload Log
+//toDo developer account
+//toDo prevent kick
+//toDo multiple channels
+//toDo release
