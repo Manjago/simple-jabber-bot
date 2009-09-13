@@ -5,6 +5,7 @@ using jabber.protocol.client;
 using jabber;
 using jabber.connection.sasl;
 using jabber.connection;
+using jabber.protocol.iq;
 
 namespace Temnenkov.SJB.Bot
 {
@@ -14,6 +15,7 @@ namespace Temnenkov.SJB.Bot
         private ConferenceManager _conferenceManager;
         private MessageLogger messageLogger;
         private Room _room;
+        private RosterManager _rosterManager;
 
         internal Bot()
         {
@@ -31,6 +33,11 @@ namespace Temnenkov.SJB.Bot
 
             _conferenceManager = new ConferenceManager();
             _conferenceManager.Stream = _client;
+
+            _rosterManager = new RosterManager();
+            _rosterManager.Stream = _client;
+            _rosterManager.AutoAllow = AutoSubscriptionHanding.AllowAll;
+            _rosterManager.AutoSubscribe = true;
 
             messageLogger = new MessageLogger();
         }
@@ -158,10 +165,10 @@ namespace Temnenkov.SJB.Bot
     }
 }
 
-//toDo developer account
 //toDo prevent doubling of delayed messages
 //toDo prevent kick
 //toDo multiple channels
+//toDo not use msg.X
 //toDo improve external Application for unload Log
 //toDo refactoring
 //toDo release
