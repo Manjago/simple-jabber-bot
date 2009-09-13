@@ -13,6 +13,7 @@ namespace Temnenkov.SJB.Bot
         private JabberClient _client;
         private ConferenceManager _conferenceManager;
         private MessageLogger messageLogger;
+        private Room _room;
 
         internal Bot()
         {
@@ -45,7 +46,13 @@ namespace Temnenkov.SJB.Bot
             {
                 case MessageType.groupchat:
                     Logger.Log(LogType.Info, String.Format("Groupchat message received from resource {0} in room {1}: {2}", msg.From.Resource, msg.From.Bare, msg.Body));
-                    messageLogger.LogMessage(msg.From.Bare!= null ? msg.From.Bare : string.Empty, msg.From.Resource != null ? msg.From.Resource : string.Empty, msg.Body != null ? msg.Body : string.Empty, msg.X != null);
+                    messageLogger.LogMessage(msg.From.Bare != null ? msg.From.Bare : string.Empty, msg.From.Resource != null ? msg.From.Resource : string.Empty, msg.Body != null ? msg.Body : string.Empty, msg.X != null);
+                    if (msg.X == null && !string.IsNullOrEmpty(msg.Body) && msg.Body.Equals("ping", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        Logger.Log(LogType.Info, String.Format("Pinging back to {0}", msg.From.User));
+                        if (_room != null && _room.IsParticipating)
+                            _room.PrivateMessage(msg.From.Resource, String.Format("Hey {0}, it's {1}.", msg.From.Resource, DateTime.Now));
+                    }
                     break;
                 default:
                     Logger.Log(LogType.Info, String.Format("Message received from {0}@{1}: {2}", msg.From.User, msg.From.Server, msg.Body));
@@ -131,14 +138,14 @@ namespace Temnenkov.SJB.Bot
             Logger.Log(LogType.Info, String.Format("Join in room {0}", jid));
 
             JID rJid = new JID(jid);
-            var room = _conferenceManager.GetRoom(jid);
-            room.Join();
+            _room = _conferenceManager.GetRoom(jid);
+            _room.Join();
 
             var retryCount = 50;
-            while (!room.IsParticipating && retryCount-- > 0)
+            while (!_room.IsParticipating && retryCount-- > 0)
                 Thread.Sleep(500);
 
-            var result = room.IsParticipating;
+            var result = _room.IsParticipating;
 
             if (result)
                 Logger.Log(LogType.Info, String.Format("Join in room {0} sucessfully", jid));
