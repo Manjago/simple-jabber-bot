@@ -118,16 +118,16 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="check" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Check" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>check.sql;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
   </data>
-  <data name="create" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Create" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>create.sql;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
   </data>
-  <data name="insert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Insert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>insert.sql;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
   </data>
-  <data name="pragma" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Pragma" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>pragma.sql;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
   </data>
 </root>

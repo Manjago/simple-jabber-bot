@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using Temnenkov.SJB.Database;
+using Temnenkov.SJB.Bot.ConfLog;
+using Temnenkov.SJB.Common;
 
 namespace Temnenkov.SJB.Bot
 {
@@ -17,20 +19,20 @@ namespace Temnenkov.SJB.Bot
 
             try
             {
-                db.ExecuteReader(Sql.check);
+                db.ExecuteReader(Sql.Check);
             }
             catch
             {
                Logger.Log(LogType.Info, "Create database");
-                db.ExecuteCommand(Sql.create);
-                db.ExecuteCommand(Sql.pragma);
+                db.ExecuteCommand(Sql.Create);
+                db.ExecuteCommand(Sql.Pragma);
             }
         }
 
         internal void LogMessage(string jid, string from, string message, bool delayed)
         {
             Logger.Log(LogType.Debug, string.Format("Log message {0} {1} {2}, delayed:{3}", jid, from, message, delayed));
-            db.ExecuteCommand(Sql.insert, jid, from, message, DateTime.Now);
+            db.ExecuteCommand(Sql.Insert, jid, from, message, DateTime.Now, Utils.GetMd5Hash(message), delayed);
         }
     }
 }

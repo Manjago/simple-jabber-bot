@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Temnenkov.SJB.Bot {
+namespace Temnenkov.SJB.Bot.ConfLog {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Temnenkov.SJB.Bot {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Temnenkov.SJB.Bot.Sql", typeof(Sql).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Temnenkov.SJB.Bot.ConfLog.Sql", typeof(Sql).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -63,9 +63,9 @@ namespace Temnenkov.SJB.Bot {
         /// <summary>
         ///   Looks up a localized string similar to SELECT 1 FROM [Log];.
         /// </summary>
-        internal static string check {
+        internal static string Check {
             get {
-                return ResourceManager.GetString("check", resourceCulture);
+                return ResourceManager.GetString("Check", resourceCulture);
             }
         }
         
@@ -75,29 +75,31 @@ namespace Temnenkov.SJB.Bot {
         ///[Jid] VARCHAR2(1000) NOT NULL,
         ///[From] VARCHAR2(1000) NOT NULL,
         ///[Message] VARCHAR2(1000) NOT NULL,
+        ///[Hash] VARCHAR2(40),
+        ///[IsDelay] BOOLEAN NOT NULL DEFAULT FALSE,
         ///[Date] TIMESTAMP NOT NULL);.
         /// </summary>
-        internal static string create {
+        internal static string Create {
             get {
-                return ResourceManager.GetString("create", resourceCulture);
+                return ResourceManager.GetString("Create", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSERT INTO [Log] ([Jid], [From], [Message], [Date]) VALUES (?, ?, ?, ?);.
+        ///   Looks up a localized string similar to INSERT INTO [Log] ([Jid], [From], [Message], [Date], [Hash], [IsDelay]) VALUES (?, ?, ?, ?, ?, ?);.
         /// </summary>
-        internal static string insert {
+        internal static string Insert {
             get {
-                return ResourceManager.GetString("insert", resourceCulture);
+                return ResourceManager.GetString("Insert", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to PRAGMA auto_vacuum = 1;.
         /// </summary>
-        internal static string pragma {
+        internal static string Pragma {
             get {
-                return ResourceManager.GetString("pragma", resourceCulture);
+                return ResourceManager.GetString("Pragma", resourceCulture);
             }
         }
     }
