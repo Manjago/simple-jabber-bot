@@ -45,7 +45,7 @@ namespace Temnenkov.SimpleJabberBot
             {
                 case MessageType.groupchat:
                     Logger.Log(LogType.Info, String.Format("Groupchat message received from resource {0} in room {1}: {2}", msg.From.Resource, msg.From.Bare, msg.Body));
-                    messageLogger.LogMessage(msg.From.Bare!= null ? msg.From.Bare : string.Empty, msg.From.Resource != null ? msg.From.Resource : string.Empty, msg.Body != null ? msg.Body : string.Empty);
+                    messageLogger.LogMessage(msg.From.Bare!= null ? msg.From.Bare : string.Empty, msg.From.Resource != null ? msg.From.Resource : string.Empty, msg.Body != null ? msg.Body : string.Empty, msg.X != null);
                     break;
                 default:
                     Logger.Log(LogType.Info, String.Format("Message received from {0}@{1}: {2}", msg.From.User, msg.From.Server, msg.Body));

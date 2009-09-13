@@ -27,9 +27,9 @@ namespace Temnenkov.SimpleJabberBot
             }
         }
 
-        internal void LogMessage(string jid, string from, string message)
+        internal void LogMessage(string jid, string from, string message, bool delayed)
         {
-            Logger.Log(LogType.Debug, string.Format("Log message {0} {1} {2}", jid, from, message));
+            Logger.Log(LogType.Debug, string.Format("Log message {0} {1} {2}, delayed:{3}", jid, from, message, delayed));
             db.ExecuteCommand(Sql.insert, jid, from, message, DateTime.Now);
         }
     }
