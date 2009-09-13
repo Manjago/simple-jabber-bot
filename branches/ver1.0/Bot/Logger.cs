@@ -3,7 +3,7 @@ using log4net;
 using log4net.Config;
 
 [assembly: XmlConfigurator(Watch = true)]
-namespace Temnenkov.SimpleJabberBot
+namespace Temnenkov.SJB.Bot
 {
     internal static class Logger
     {

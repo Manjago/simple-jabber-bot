@@ -8,8 +8,8 @@
     <ProjectGuid>{41758921-8677-423E-9E7F-BDA8CAA341B8}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Temnenkov.SimpleJabberBot</RootNamespace>
-    <AssemblyName>Temnenkov.SimpleJabberBot</AssemblyName>
+    <RootNamespace>Temnenkov.SJB.Bot</RootNamespace>
+    <AssemblyName>Temnenkov.SJB.Bot</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkSubset>
@@ -35,11 +35,11 @@
   <ItemGroup>
     <Reference Include="jabber-net, Version=2.1.0.710, Culture=neutral, PublicKeyToken=924c5b18328d6f09, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\jabber-net.dll</HintPath>
+      <HintPath>..\lib\jabber-net.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\log4net.dll</HintPath>
+      <HintPath>..\lib\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -76,13 +76,13 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Temnenkov.Common\Temnenkov.Common.csproj">
+    <ProjectReference Include="..\Common\Common.csproj">
       <Project>{75F1F983-6D1E-4A7A-A375-75A1A30C8498}</Project>
-      <Name>Temnenkov.Common</Name>
+      <Name>Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Temnenkov.Database\Temnenkov.Database.csproj">
+    <ProjectReference Include="..\Database\Database.csproj">
       <Project>{9B54F57D-66B6-4924-B088-29C26990734F}</Project>
-      <Name>Temnenkov.Database</Name>
+      <Name>Database</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

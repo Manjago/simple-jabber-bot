@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Text;
 using Temnenkov.SJB.Database;
 
-namespace Temnenkov.SimpleJabberBot
+namespace Temnenkov.SJB.Bot
 {
     internal class MessageLogger
     {
-        private Database db;
+        private Database.Database db;
 
         internal void Init()
         {
             if (db != null) return;
 
-            db = new Database("Log");
+            db = new Database.Database("Log");
 
             try
             {

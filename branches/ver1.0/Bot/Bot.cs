@@ -6,7 +6,7 @@ using jabber;
 using jabber.connection.sasl;
 using jabber.connection;
 
-namespace Temnenkov.SimpleJabberBot
+namespace Temnenkov.SJB.Bot
 {
     internal class Bot
     {
