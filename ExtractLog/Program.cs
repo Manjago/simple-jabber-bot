@@ -14,7 +14,12 @@ namespace Temnenkov.SJB.ExtractLog
             if (args.Length < 1 || !Int32.TryParse(args[0], out shift))
                 shift = -1;
 
-            string dirName = args[1];
+            string dirName;
+
+            if (args.Length < 2 || !Directory.Exists(args[1]))
+                dirName = Path.GetDirectoryName(Utils.GetExecutablePath());
+            else
+                dirName = args[1];
 
             var selectDate = DateTime.Now.AddDays(shift);
             var firstDate = selectDate.Date;
