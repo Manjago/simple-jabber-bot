@@ -1,1 +1,0 @@
-INSERT INTO [Log] ([Jid], [From], [Message], [Date]) VALUES (?, ?, ?, ?);

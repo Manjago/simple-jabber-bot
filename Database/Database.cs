@@ -13,10 +13,14 @@ namespace Temnenkov.SJB.Database
         private SQLiteConnection _connection;
 
         public Database(string fileName)
+            : this(Path.GetDirectoryName(Utils.GetExecutablePath()), fileName)
+        { }
+
+        public Database(string dirName, string fileName)
         {
             if (!fileName.ToLower().EndsWith(".sqlite"))
                 fileName += ".sqlite";
-            string fullName = Path.Combine(Path.GetDirectoryName(Utils.GetExecutablePath()), fileName);
+            string fullName = Path.Combine(dirName, fileName);
             _connection = new SQLiteConnection(String.Format("Data Source={0}", fullName));
             _connection.Open();
         }
