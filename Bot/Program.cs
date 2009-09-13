@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Temnenkov.SimpleJabberBot
+namespace Temnenkov.SJB.Bot
 {
     internal class Program
     {

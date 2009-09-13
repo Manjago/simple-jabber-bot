@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simple-Jabber-Bot", "Simple-Jabber-Bot.csproj", "{41758921-8677-423E-9E7F-BDA8CAA341B8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bot", "Bot\Bot.csproj", "{41758921-8677-423E-9E7F-BDA8CAA341B8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2C409011-3092-443B-AA36-2C88A7C63363}"
 	ProjectSection(SolutionItems) = preProject
@@ -12,11 +12,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		lib\zlib.net.dll = lib\zlib.net.dll
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Temnenkov.Database", "..\Temnenkov.Database\Temnenkov.Database.csproj", "{9B54F57D-66B6-4924-B088-29C26990734F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "Database\Database.csproj", "{9B54F57D-66B6-4924-B088-29C26990734F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Temnenkov.Common", "..\Temnenkov.Common\Temnenkov.Common.csproj", "{75F1F983-6D1E-4A7A-A375-75A1A30C8498}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{75F1F983-6D1E-4A7A-A375-75A1A30C8498}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtractLog", "..\ExtractLog\ExtractLog.csproj", "{2036F205-A227-4F33-8A84-72F4AB9206B3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtractLog", "ExtractLog\ExtractLog.csproj", "{2036F205-A227-4F33-8A84-72F4AB9206B3}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution

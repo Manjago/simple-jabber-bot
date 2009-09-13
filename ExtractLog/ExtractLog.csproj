@@ -40,13 +40,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Temnenkov.Common\Temnenkov.Common.csproj">
+    <ProjectReference Include="..\Common\Common.csproj">
       <Project>{75F1F983-6D1E-4A7A-A375-75A1A30C8498}</Project>
-      <Name>Temnenkov.Common</Name>
+      <Name>Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Temnenkov.Database\Temnenkov.Database.csproj">
+    <ProjectReference Include="..\Database\Database.csproj">
       <Project>{9B54F57D-66B6-4924-B088-29C26990734F}</Project>
-      <Name>Temnenkov.Database</Name>
+      <Name>Database</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

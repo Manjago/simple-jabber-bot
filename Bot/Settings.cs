@@ -1,6 +1,6 @@
 ﻿using System.Configuration;
 
-namespace Temnenkov.SimpleJabberBot
+namespace Temnenkov.SJB.Bot
 {
     public static class Settings
     {

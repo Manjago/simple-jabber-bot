@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Temnenkov.SimpleJabberBot {
+namespace Temnenkov.SJB.Bot {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Temnenkov.SimpleJabberBot {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Temnenkov.SimpleJabberBot.Sql", typeof(Sql).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Temnenkov.SJB.Bot.Sql", typeof(Sql).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -73,6 +73,7 @@ namespace Temnenkov.SimpleJabberBot {
         ///   Looks up a localized string similar to CREATE TABLE [Log] (
         ///[Id] integer PRIMARY KEY AUTOINCREMENT NOT NULL,
         ///[Jid] VARCHAR2(1000) NOT NULL,
+        ///[From] VARCHAR2(1000) NOT NULL,
         ///[Message] VARCHAR2(1000) NOT NULL,
         ///[Date] TIMESTAMP NOT NULL);.
         /// </summary>
@@ -83,7 +84,7 @@ namespace Temnenkov.SimpleJabberBot {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSERT INTO [Log] ([Jid], [Message], [Date]) VALUES (?, ?, ?);.
+        ///   Looks up a localized string similar to INSERT INTO [Log] ([Jid], [From], [Message], [Date]) VALUES (?, ?, ?, ?);.
         /// </summary>
         internal static string insert {
             get {
