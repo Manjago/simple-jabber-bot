@@ -172,3 +172,9 @@ namespace Temnenkov.SJB.Bot
 //toDo improve external Application for unload Log
 //toDo refactoring
 //toDo release
+
+//1. Разобраццо с дублированием в логе
+//2. Противодействовать кику
+//3. Логирование нескольких каналов
+//4. Интимности - не использовать Message.X
+//5. Параметризовать выгружалко лога
