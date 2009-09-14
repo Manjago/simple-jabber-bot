@@ -6,6 +6,7 @@ using jabber;
 using jabber.connection.sasl;
 using jabber.connection;
 using jabber.protocol.iq;
+using System.Text;
 
 namespace Temnenkov.SJB.Bot
 {
@@ -51,20 +52,67 @@ namespace Temnenkov.SJB.Bot
         {
             switch (msg.Type)
             {
+                //toDO refactoring
                 case MessageType.groupchat:
                     Logger.Log(LogType.Info, String.Format("Groupchat message received from resource {0} in room {1}: {2}", msg.From.Resource, msg.From.Bare, msg.Body));
                     messageLogger.LogMessage(msg.From.Bare != null ? msg.From.Bare : string.Empty, msg.From.Resource != null ? msg.From.Resource : string.Empty, msg.Body != null ? msg.Body : string.Empty, msg.X != null);
                     if (msg.X == null && !string.IsNullOrEmpty(msg.Body) && msg.Body.Equals("ping", StringComparison.InvariantCultureIgnoreCase))
                     {
                         Logger.Log(LogType.Info, String.Format("Pinging back to {0}", msg.From.User));
-                        if (_room != null && _room.IsParticipating)
-                            _room.PrivateMessage(msg.From.Resource, String.Format("Hey {0}, it's {1}.", msg.From.Resource, DateTime.Now));
+                        SendPrivateMessage(msg.From.Resource, String.Format("Hey {0}, it's {1}.", msg.From.Resource, DateTime.Now));
                     }
+
+                    if (msg.X == null && !string.IsNullOrEmpty(msg.Body) && msg.Body.Equals("log", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        Logger.Log(LogType.Info, String.Format("Send log to {0}", msg.From.User));
+                        SendLog(msg.From.Resource);                        
+                    }
+
                     break;
                 default:
                     Logger.Log(LogType.Info, String.Format("Message received from {0}@{1}: {2}", msg.From.User, msg.From.Server, msg.Body));
                     break;
             }
+        }
+
+        private void SendPrivateMessage(string to, string message)
+        {
+            if (_room != null && _room.IsParticipating)
+                _room.PrivateMessage(to, message);
+        }
+
+        //toDO refactoring
+        private void SendLog(string to)
+        {
+            var selectDate = DateTime.Now.AddDays(-1);
+            var firstDate = selectDate.Date;
+            var secondDate = DateTime.Now.AddDays(1);
+
+            StringBuilder sb = new StringBuilder();
+            using (var db = new Database.Database("Log"))
+            {
+                    using (var reader = db.ExecuteReader("SELECT [Date], [From], [Message], [IsDelay] from [Log] WHERE [Date] BETWEEN ? AND ? AND [Jid] = 'fido828@conference.jabber.ru' ORDER BY [Id]",
+                        firstDate, secondDate))
+                    {
+                        while (reader.Read())
+                        {
+                            sb.AppendLine(string.Format("[{4} {0}]{3} {1} {2}",
+                                reader.GetDateTime(0).ToShortTimeString(),
+                                InAp(reader.GetString(1)),
+                                reader.GetString(2),
+                                reader.GetBoolean(3) ? "*" : string.Empty,
+                                reader.GetDateTime(0).ToShortDateString()));
+                        }
+                    }
+            }
+            if (sb.Length != 0)
+                SendPrivateMessage(to, sb.ToString());
+        }
+
+        //toDO refactoring
+        private static string InAp(string arg)
+        {
+            return string.IsNullOrEmpty(arg) ? string.Empty : string.Format("'{0}'", arg);
         }
 
         void _client_OnError(object sender, Exception ex)

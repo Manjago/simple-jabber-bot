@@ -25,6 +25,7 @@ namespace Temnenkov.SJB.ExtractLog
             var firstDate = selectDate.Date;
             var secondDate = selectDate.Date.AddDays(1).AddMilliseconds(-1);
 
+            //toDO refactoring
             using (var db = new Database.Database(dirName, "Log"))
             {
                 var resFile = Path.Combine(Path.GetDirectoryName(Utils.GetExecutablePath()), "exp.log");
@@ -46,6 +47,7 @@ namespace Temnenkov.SJB.ExtractLog
             }
         }
 
+        //toDO refactoring
         private static string InAp(string arg)
         {
             return string.IsNullOrEmpty(arg) ? string.Empty : string.Format("'{0}'", arg);
