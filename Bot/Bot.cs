@@ -242,7 +242,6 @@ namespace Temnenkov.SJB.Bot
     }
 }
 
-//toDo optimize database indexes
 //todo localization
 //toDo join leave etc
 //toDo prevent doubling of delayed messages
@@ -250,6 +249,7 @@ namespace Temnenkov.SJB.Bot
 //toDo multiple channels
 //toDo not use msg.X
 //toDo improve external Application for unload Log
+//toDO mprove logging
 //toDo refactoring
 //toDo release ver 1.0
 
