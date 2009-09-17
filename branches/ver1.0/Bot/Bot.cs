@@ -53,13 +53,14 @@ namespace Temnenkov.SJB.Bot
                 case MessageType.groupchat:
                     Logger.Log(LogType.Info, String.Format("Groupchat message received from resource {0} in room {1}: {2}", msg.From.Resource, msg.From.Bare, msg.Body));
                     messageLogger.LogMessage(msg.From.Bare != null ? msg.From.Bare : string.Empty, msg.From.Resource != null ? msg.From.Resource : string.Empty, msg.Body != null ? msg.Body : string.Empty, msg.X != null);
-                    if (msg.X == null && !string.IsNullOrEmpty(msg.Body) && msg.Body.Equals("ping", StringComparison.InvariantCultureIgnoreCase))
+
+                    if (MessageHelper.IsPingCommand(msg))
                     {
                         Logger.Log(LogType.Info, String.Format("Pinging back to {0}", msg.From.User));
                         SendPrivateMessage(msg.From.Resource, String.Format("Hey {0}, it's {1}.", msg.From.Resource, DateTime.Now));
                     }
 
-                    if (msg.X == null && !string.IsNullOrEmpty(msg.Body) && msg.Body.Equals("log", StringComparison.InvariantCultureIgnoreCase))
+                    if (MessageHelper.IsLogCommand(msg))
                     {
                         Logger.Log(LogType.Info, String.Format("Send log to {0}", msg.From.User));
                         SendLog(msg.From.Bare, msg.From.Resource);                        
@@ -68,20 +69,20 @@ namespace Temnenkov.SJB.Bot
                     break;
                 case MessageType.chat:
                     Logger.Log(LogType.Info, String.Format("chat message received from resource {0} in room {1}: {2}", msg.From.Resource, msg.From.Bare, msg.Body));
-                    if (!string.IsNullOrEmpty(msg.Body) && msg.Body.Equals("ping", StringComparison.InvariantCultureIgnoreCase))
+                    if (MessageHelper.IsPingCommand(msg))
                     {
                         Logger.Log(LogType.Info, String.Format("Pinging back to {0}", msg.From.User));
-                        if (msg.From.Bare != null && msg.From.Bare == _room.JID.Bare)
+                        if (MessageHelper.IsFromRoomMessage(msg, _room))
                             // значит, в комнате
-                            SendPrivateMessage(msg.From.Resource, String.Format("Hey {0}, it's {1}.", msg.From.Resource, DateTime.Now));
+                            SendPrivateMessage(msg.From.Resource, PingMessage(msg.From.Resource));
                         else // не в комнате
-                            SendMessage(msg.From.Bare, String.Format("Hey {0}, it's {1}.", msg.From.Bare, DateTime.Now));
+                            SendMessage(msg.From.Bare, PingMessage(msg.From.Bare));
                     }
 
-                    if (!string.IsNullOrEmpty(msg.Body) && msg.Body.Equals("log", StringComparison.InvariantCultureIgnoreCase))
+                    if (MessageHelper.IsLogCommand(msg))
                     {
                         Logger.Log(LogType.Info, String.Format("Send log to {0}", msg.From.User));
-                        if (msg.From.Bare != null && msg.From.Bare == _room.JID.Bare) // логи только через приватное сообщение из комнаты
+                        if (MessageHelper.IsFromRoomMessage(msg, _room)) // логи только через приватное сообщение из комнаты
                             SendLog(msg.From.Bare, msg.From.Resource);
                     }
                     break;
@@ -89,6 +90,11 @@ namespace Temnenkov.SJB.Bot
                     Logger.Log(LogType.Info, String.Format("Message received from {0}@{1}: {2}", msg.From.User, msg.From.Server, msg.Body));
                     break;
             }
+        }
+
+        private string PingMessage(string whom)
+        {
+            return string.Format("Hey {0}, it's {1}.", whom, DateTime.Now);
         }
 
         private void SendPrivateMessage(string to, string message)
@@ -236,8 +242,8 @@ namespace Temnenkov.SJB.Bot
     }
 }
 
-
-//toDO refactor log & ping in private messages
+//toDo optimize database indexes
+//todo localization
 //toDo join leave etc
 //toDo prevent doubling of delayed messages
 //toDo prevent kick
