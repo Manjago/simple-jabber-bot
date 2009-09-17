@@ -1,6 +1,7 @@
 ﻿using System;
 using log4net;
 using log4net.Config;
+using Temnenkov.SJB.Common;
 
 [assembly: XmlConfigurator(Watch = true)]
 namespace Temnenkov.SJB.Bot
@@ -38,12 +39,21 @@ namespace Temnenkov.SJB.Bot
 
     }
 
-    internal enum LogType
+    internal class LogWrapper : ILogger
     {
-        Debug,
-        Warn,
-        Error,
-        Info,
-        Fatal
+        #region ILogger Members
+
+        public void Log(LogType type, string message, Exception ex)
+        {
+            Logger.Log(type, message, ex);
+        }
+
+        public void Log(LogType type, string message)
+        {
+            Logger.Log(type, message);
+        }
+
+        #endregion
     }
+
 }

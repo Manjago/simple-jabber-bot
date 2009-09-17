@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{75F1F983-6D1E-4A7A-A375-75A1A30C8498}</ProjectGuid>
+    <ProjectGuid>{830841A3-08FC-49D4-AF11-07914A440E33}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Temnenkov.SJB.Common</RootNamespace>
-    <AssemblyName>Temnenkov.SJB.Common</AssemblyName>
+    <RootNamespace>Temnenkov.SJB.ConfLog</RootNamespace>
+    <AssemblyName>Temnenkov.SJB.ConfLog</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -36,9 +36,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ILogger.cs" />
+    <Compile Include="MessageLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utils.cs" />
+    <Compile Include="Sql.Designer.cs">
+      <DependentUpon>Sql.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="check.sql" />
+    <None Include="create.sql" />
+    <None Include="getlog.sql" />
+    <None Include="insert.sql" />
+    <None Include="pragma.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Sql.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Sql.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{75F1F983-6D1E-4A7A-A375-75A1A30C8498}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Database\Database.csproj">
+      <Project>{9B54F57D-66B6-4924-B088-29C26990734F}</Project>
+      <Name>Database</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
