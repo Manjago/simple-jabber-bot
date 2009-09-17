@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Temnenkov.SJB.Bot.ConfLog {
+namespace Temnenkov.SJB.ConfLog {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Temnenkov.SJB.Bot.ConfLog {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Temnenkov.SJB.Bot.ConfLog.Sql", typeof(Sql).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Temnenkov.SJB.ConfLog.Sql", typeof(Sql).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -82,6 +82,15 @@ namespace Temnenkov.SJB.Bot.ConfLog {
         internal static string Create {
             get {
                 return ResourceManager.GetString("Create", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT [Date], [From], [Message], [IsDelay] from [Log] WHERE [Date] BETWEEN ? AND ? AND [Jid] = &apos;fido828@conference.jabber.ru&apos; ORDER BY [Id].
+        /// </summary>
+        internal static string Getlog {
+            get {
+                return ResourceManager.GetString("Getlog", resourceCulture);
             }
         }
         

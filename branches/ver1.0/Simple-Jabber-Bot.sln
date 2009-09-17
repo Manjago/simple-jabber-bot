@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtractLog", "ExtractLog\ExtractLog.csproj", "{2036F205-A227-4F33-8A84-72F4AB9206B3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfLog", "ConfLog\ConfLog.csproj", "{830841A3-08FC-49D4-AF11-07914A440E33}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -44,6 +46,10 @@ Global
 		{2036F205-A227-4F33-8A84-72F4AB9206B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2036F205-A227-4F33-8A84-72F4AB9206B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2036F205-A227-4F33-8A84-72F4AB9206B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{830841A3-08FC-49D4-AF11-07914A440E33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{830841A3-08FC-49D4-AF11-07914A440E33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{830841A3-08FC-49D4-AF11-07914A440E33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{830841A3-08FC-49D4-AF11-07914A440E33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

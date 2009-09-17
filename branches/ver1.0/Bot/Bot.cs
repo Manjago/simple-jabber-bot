@@ -7,6 +7,8 @@ using jabber.connection.sasl;
 using jabber.connection;
 using jabber.protocol.iq;
 using System.Text;
+using Temnenkov.SJB.Common;
+using Temnenkov.SJB.ConfLog;
 
 namespace Temnenkov.SJB.Bot
 {
@@ -40,12 +42,7 @@ namespace Temnenkov.SJB.Bot
             _rosterManager.AutoAllow = AutoSubscriptionHanding.AllowAll;
             _rosterManager.AutoSubscribe = true;
 
-            messageLogger = new MessageLogger();
-        }
-
-        internal void Init()
-        {
-            messageLogger.Init();
+            messageLogger = new MessageLogger(new LogWrapper());
         }
 
         void _client_OnMessage(object sender, Message msg)
@@ -65,7 +62,7 @@ namespace Temnenkov.SJB.Bot
                     if (msg.X == null && !string.IsNullOrEmpty(msg.Body) && msg.Body.Equals("log", StringComparison.InvariantCultureIgnoreCase))
                     {
                         Logger.Log(LogType.Info, String.Format("Send log to {0}", msg.From.User));
-                        SendLog(msg.From.Resource);                        
+                        SendLog(msg.From.Bare, msg.From.Resource);                        
                     }
 
                     break;
@@ -81,38 +78,15 @@ namespace Temnenkov.SJB.Bot
                 _room.PrivateMessage(to, message);
         }
 
-        //toDO refactoring
-        private void SendLog(string to)
+        private void SendLog(string jid, string to)
         {
             var selectDate = DateTime.Now.AddDays(-1);
             var firstDate = selectDate.Date;
             var secondDate = DateTime.Now.AddDays(1);
 
-            StringBuilder sb = new StringBuilder();
-            using (var db = new Database.Database("Log"))
-            {
-                    using (var reader = db.ExecuteReader("SELECT [Date], [From], [Message], [IsDelay] from [Log] WHERE [Date] BETWEEN ? AND ? AND [Jid] = 'fido828@conference.jabber.ru' ORDER BY [Id]",
-                        firstDate, secondDate))
-                    {
-                        while (reader.Read())
-                        {
-                            sb.AppendLine(string.Format("[{4} {0}]{3} {1} {2}",
-                                reader.GetDateTime(0).ToShortTimeString(),
-                                InAp(reader.GetString(1)),
-                                reader.GetString(2),
-                                reader.GetBoolean(3) ? "*" : string.Empty,
-                                reader.GetDateTime(0).ToShortDateString()));
-                        }
-                    }
-            }
+            var sb = new MessageLogger(new LogWrapper()).GetLog(jid, firstDate, secondDate, true);
             if (sb.Length != 0)
                 SendPrivateMessage(to, sb.ToString());
-        }
-
-        //toDO refactoring
-        private static string InAp(string arg)
-        {
-            return string.IsNullOrEmpty(arg) ? string.Empty : string.Format("'{0}'", arg);
         }
 
         void _client_OnError(object sender, Exception ex)
@@ -213,16 +187,13 @@ namespace Temnenkov.SJB.Bot
     }
 }
 
+
+//toDo log & ping in private messages
 //toDo prevent doubling of delayed messages
 //toDo prevent kick
 //toDo multiple channels
 //toDo not use msg.X
 //toDo improve external Application for unload Log
 //toDo refactoring
-//toDo release
+//toDo release ver 1.0
 
-//1. Разобраццо с дублированием в логе
-//2. Противодействовать кику
-//3. Логирование нескольких каналов
-//4. Интимности - не использовать Message.X
-//5. Параметризовать выгружалко лога
