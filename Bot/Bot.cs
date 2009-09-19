@@ -85,9 +85,12 @@ namespace Temnenkov.SJB.Bot
                         if (MessageHelper.IsFromRoomMessage(msg, _room)) // логи только через приватное сообщение из комнаты
                             SendLog(msg.From.Bare, msg.From.Resource);
                     }
+
                     break;
                 default:
                     Logger.Log(LogType.Info, String.Format("Message received from {0}@{1}: {2}", msg.From.User, msg.From.Server, msg.Body));
+                    if (MessageHelper.IsShutdownCommand(msg))
+                        Environment.Exit(0);
                     break;
             }
         }
@@ -242,6 +245,7 @@ namespace Temnenkov.SJB.Bot
     }
 }
 
+//toDO help screen
 //todo localization
 //toDo join leave etc
 //toDo prevent doubling of delayed messages
