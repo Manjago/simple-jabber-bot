@@ -42,7 +42,7 @@ namespace Temnenkov.SJB.Bot
         {
             get
             {
-                return Get("password", "");
+                return Get("password", string.Empty);
             }
         }
 
@@ -50,7 +50,15 @@ namespace Temnenkov.SJB.Bot
         {
             get
             {
-                return Get("roomJid", "");
+                return Get("roomJid", string.Empty);
+            }
+        }
+
+        public static string OperatorJid
+        {
+            get
+            {
+                return Get("operatorJid", string.Empty);
             }
         }
     }
