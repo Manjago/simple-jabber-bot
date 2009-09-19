@@ -210,6 +210,18 @@ namespace Temnenkov.SJB.Bot
             Logger.Log(LogType.Info, String.Format("Join in room {0}", jid));
 
             JID rJid = new JID(jid);
+            if (_room != null)
+            {
+                _room.OnParticipantJoin -= new RoomParticipantEvent(_room_OnParticipantJoin);
+                _room.OnParticipantLeave -= new RoomParticipantEvent(_room_OnParticipantLeave);
+                _room.OnPrivateMessage -= new MessageHandler(_room_OnPrivateMessage);
+                _room.OnRoomMessage -= new MessageHandler(_room_OnRoomMessage);
+                _room.OnAdminMessage -= new MessageHandler(_room_OnAdminMessage);
+                _room.OnLeave -= new RoomPresenceHandler(_room_OnLeave);
+                _room.OnJoin -= new RoomEvent(_room_OnJoin);
+            }
+
+
             _room = _conferenceManager.GetRoom(jid);
             _room.Join();
 
@@ -223,23 +235,49 @@ namespace Temnenkov.SJB.Bot
             _room.OnParticipantLeave += new RoomParticipantEvent(_room_OnParticipantLeave);
             _room.OnPrivateMessage += new MessageHandler(_room_OnPrivateMessage);
             _room.OnRoomMessage += new MessageHandler(_room_OnRoomMessage);
+            _room.OnAdminMessage += new MessageHandler(_room_OnAdminMessage);
+            _room.OnLeave += new RoomPresenceHandler(_room_OnLeave);
+            _room.OnJoin += new RoomEvent(_room_OnJoin);
 
             if (result)
+            {
                 Logger.Log(LogType.Info, String.Format("Join in room {0} sucessfully", jid));
+                _room.PublicMessage("PREVED!");                    
+
+                
+            }
             else
                 Logger.Log(LogType.Warn, String.Format("Join in room {0} fail", jid));
 
             return result;
         }
 
+        void _room_OnJoin(Room room)
+        {
+            Logger.Log(LogType.Info, string.Format("join room {0}", 
+                room.JID));
+        }
+
+        void _room_OnLeave(Room room, Presence pres)
+        {
+            Logger.Log(LogType.Info, string.Format("leave room {0} with presence {1}", 
+                room.JID, pres));
+            JoinRoom(Settings.RoomJid);
+        }
+
+        void _room_OnAdminMessage(object sender, Message msg)
+        {
+            Logger.Log(LogType.Info, string.Format("admin message {0}", msg.OuterXml));            
+        }
+
         void _room_OnRoomMessage(object sender, Message msg)
         {
-            Logger.Log(LogType.Info, string.Format("room message {0}", msg));
+            Logger.Log(LogType.Info, string.Format("room message {0}", msg.OuterXml));
         }
 
         void _room_OnPrivateMessage(object sender, Message msg)
         {
-            Logger.Log(LogType.Info, string.Format("private message {0}", msg));
+            Logger.Log(LogType.Info, string.Format("private message {0}", msg.OuterXml));
         }
 
         void _room_OnParticipantLeave(Room room, RoomParticipant participant)
@@ -259,7 +297,6 @@ namespace Temnenkov.SJB.Bot
 //todo localization
 //toDo join leave etc
 //toDo prevent doubling of delayed messages
-//toDo prevent kick
 //toDo multiple channels
 //toDo not use msg.X
 //toDo improve external Application for unload Log
