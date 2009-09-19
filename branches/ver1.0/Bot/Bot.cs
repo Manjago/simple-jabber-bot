@@ -68,29 +68,39 @@ namespace Temnenkov.SJB.Bot
 
                     break;
                 case MessageType.chat:
-                    Logger.Log(LogType.Info, String.Format("chat message received from resource {0} in room {1}: {2}", msg.From.Resource, msg.From.Bare, msg.Body));
-                    if (MessageHelper.IsPingCommand(msg))
                     {
-                        Logger.Log(LogType.Info, String.Format("Pinging back to {0}", msg.From.User));
-                        if (MessageHelper.IsFromRoomMessage(msg, _room))
-                            // значит, в комнате
-                            SendPrivateMessage(msg.From.Resource, PingMessage(msg.From.Resource));
-                        else // не в комнате
-                            SendMessage(msg.From.Bare, PingMessage(msg.From.Bare));
-                    }
+                        var isRoomMesage = MessageHelper.IsFromRoomMessage(msg, _room);
 
-                    if (MessageHelper.IsLogCommand(msg))
-                    {
-                        Logger.Log(LogType.Info, String.Format("Send log to {0}", msg.From.User));
-                        if (MessageHelper.IsFromRoomMessage(msg, _room)) // логи только через приватное сообщение из комнаты
-                            SendLog(msg.From.Bare, msg.From.Resource);
+                        Logger.Log(LogType.Info, String.Format("room {3} chat message resource {0} bare {1} body {2}", msg.From.Resource, msg.From.Bare, msg.Body, isRoomMesage));
+                        if (MessageHelper.IsPingCommand(msg))
+                        {
+                            Logger.Log(LogType.Info, String.Format("Pinging back to {0}", msg.From.User));
+                            if (isRoomMesage)
+                                // значит, в комнате
+                                SendPrivateMessage(msg.From.Resource, PingMessage(msg.From.Resource));
+                            else // не в комнате
+                                SendMessage(msg.From.Bare, PingMessage(msg.From.Bare));
+                        }
+
+                        if (MessageHelper.IsLogCommand(msg))
+                        {
+                            Logger.Log(LogType.Info, String.Format("Send log to {0}", msg.From.User));
+                            if (isRoomMesage) // логи только через приватное сообщение из комнаты
+                                SendLog(msg.From.Bare, msg.From.Resource);
+                        }
                     }
 
                     break;
-                default:
-                    Logger.Log(LogType.Info, String.Format("Message received from {0}@{1}: {2}", msg.From.User, msg.From.Server, msg.Body));
+                case MessageType.normal:
+                    Logger.Log(LogType.Info, String.Format("normal message received from {0}@{1}: {2}", msg.From.User, msg.From.Server, msg.Body));
                     if (MessageHelper.IsShutdownCommand(msg))
+                    {
+                        Logger.Log(LogType.Info, "shutdown command");
                         Environment.Exit(0);
+                    }
+                    break;
+                default:
+                    Logger.Log(LogType.Info, String.Format("default message received from {0}@{1}: {2}", msg.From.User, msg.From.Server, msg.Body));
                     break;
             }
         }
