@@ -17,7 +17,8 @@ namespace Temnenkov.SJB.ConfLog
             _log = log;
         }
 
-        public MessageLogger(ILogger log, string dirName): this(log)
+        public MessageLogger(ILogger log, string dirName)
+            : this(log)
         {
             _dirName = dirName;
         }
@@ -45,8 +46,11 @@ namespace Temnenkov.SJB.ConfLog
 
         public void LogMessage(string jid, string from, string message, bool delayed)
         {
+            //toDO no empty sender or empty message
+
             Init();
-            _log.Log(LogType.Debug, string.Format("Log message {0} {1} {2}, delayed:{3}", jid, from, message, delayed));
+            _log.Log(LogType.Debug, string.Format("Log message {0} {1} {2}, delayed:{3}", jid, from, message, delayed,
+                string.IsNullOrEmpty(from) || string.IsNullOrEmpty(message) ? 'T' : 'N'));
             _db.ExecuteCommand(Sql.Insert, jid, from, message, DateTime.Now, Utils.GetMd5Hash(message), delayed);
         }
 
@@ -55,21 +59,35 @@ namespace Temnenkov.SJB.ConfLog
         {
             Init();
             var sb = new StringBuilder();
-                using (var reader = _db.ExecuteReader(Sql.Getlog, firstDate, secondDate, jid))
+            var filter = new Filter();
+            using (var reader = _db.ExecuteReader(Sql.Getlog, firstDate, secondDate, jid))
+            {
+                while (reader.Read())
                 {
-                    while (reader.Read())
-                    {
-                        sb.AppendLine(string.Format("[{4}{0}]{3} {1} {2}",
-                            reader.GetDateTime(0).ToShortTimeString(),
-                            InAp(reader.GetString(1)),
-                            reader.GetString(2),
-                            reader.GetBoolean(3) ? "*" : string.Empty,
-                            withDate ? String.Format("{0} ", reader.GetDateTime(0).ToShortDateString())
-                            : string.Empty
-                            ));
-                    }
+                    var line = new ProtocolLine(reader.GetDateTime(0),
+                        reader.GetString(1), reader.GetString(2),
+                        reader.GetBoolean(3), reader.GetString(4));
+
+                    if (filter.Approve(line))
+                        sb.AppendLine(line.ToLogString(withDate));
+
+                    PrintDeffered(withDate, sb, filter);
                 }
-                return sb;
+                filter.Stop();
+                PrintDeffered(withDate, sb, filter);
+            }
+            return sb;
+        }
+
+        private static void PrintDeffered(bool withDate, StringBuilder sb, Filter filter)
+        {
+            var lines = filter.GetLines();
+            if (lines != null)
+            {
+                var enProtocolLine = lines.GetEnumerator();
+                while (enProtocolLine.MoveNext())
+                    sb.AppendLine(enProtocolLine.Current.ToLogString(withDate));
+            }
         }
 
         private static string InAp(string arg)
