@@ -1,0 +1,1 @@
+SELECT [Date], [From], [Message], [IsDelay] from [Log] WHERE [Date] BETWEEN ? AND ? AND [Jid] = ? ORDER BY [Id]
