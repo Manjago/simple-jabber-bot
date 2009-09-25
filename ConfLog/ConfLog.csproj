@@ -36,8 +36,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Depot.cs" />
+    <Compile Include="Filter.cs" />
     <Compile Include="MessageLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProtocolLine.cs" />
     <Compile Include="Sql.Designer.cs">
       <DependentUpon>Sql.resx</DependentUpon>
       <AutoGen>True</AutoGen>

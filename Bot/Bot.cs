@@ -296,7 +296,8 @@ namespace Temnenkov.SJB.Bot
 //toDO help screen
 //todo localization
 //toDo join leave etc
-//toDo prevent doubling of delayed messages
+//toDo *prevent doubling of delayed messages
+//toDo plugin architect
 //toDo multiple channels
 //toDo not use msg.X
 //toDo improve external Application for unload Log

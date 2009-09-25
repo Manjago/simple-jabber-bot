@@ -5,5 +5,6 @@ CREATE TABLE [Log] (
 [Message] VARCHAR2(1000) NOT NULL,
 [Hash] VARCHAR2(40),
 [IsDelay] BOOLEAN NOT NULL DEFAULT FALSE,
-[Date] TIMESTAMP NOT NULL);
+[Date] TIMESTAMP NOT NULL,
+[Type] char(1) NOT NULL DEFAULT 'N');
 CREATE INDEX [log_jid_date] ON [Log] ([Jid], [Date]);
