@@ -30,10 +30,17 @@ namespace Temnenkov.SJB.Bot
                 RoomPrivateMessage(this, e);
         }
 
+        internal void OnNormalMessage(NormalMessageEventArgs e)
+        {
+            if (NormalMessage != null)
+                NormalMessage(this, e);
+        }
+
         #region ITranslator Members
 
         public event RoomMessageHandler RoomPublicMessage;
         public event RoomMessageHandler RoomPrivateMessage;
+        public event NormalMessageHandler NormalMessage;
 
         public void SendRoomPublicMessage(string roomJid, string message)
         {
@@ -43,6 +50,11 @@ namespace Temnenkov.SJB.Bot
         public void SendRoomPrivateMessage(string roomJid, string to, string message)
         {
             _bot.SendRoomPrivateMessage(roomJid, to, message);
+        }
+
+        public void SendNormalMessage(string to, string message)
+        {
+            _bot.SendMessage(to, message);
         }
         #endregion
     }

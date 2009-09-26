@@ -8,8 +8,10 @@ namespace Temnenkov.SJB.Common
     {
         event RoomMessageHandler RoomPublicMessage;
         event RoomMessageHandler RoomPrivateMessage;
+        event NormalMessageHandler NormalMessage;
         void SendRoomPublicMessage(string roomJid, string message);
         void SendRoomPrivateMessage(string roomJid, string to, string message);
+        void SendNormalMessage(string to, string message);
     }
 
     public class RoomMessageEventArgs : EventArgs
@@ -33,4 +35,20 @@ namespace Temnenkov.SJB.Common
 
     public delegate void RoomMessageHandler(Object sender, RoomMessageEventArgs e);
 
+    public class NormalMessageEventArgs : EventArgs
+    {
+        public string From { get; private set; }
+        public string Message { get; private set; }
+        public DateTime Date { get; private set; }
+        private NormalMessageEventArgs() { }
+        public NormalMessageEventArgs(
+            string from, string message, DateTime date)
+        {
+            From = from;
+            Message = message;
+            Date = date;
+        }
+    }
+
+    public delegate void NormalMessageHandler(Object sender, NormalMessageEventArgs e);
 }
