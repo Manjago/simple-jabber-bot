@@ -18,7 +18,7 @@ namespace Temnenkov.SJB.PingerPlugin
         void Translator_NormalMessage(object sender, NormalMessageEventArgs e)
         {
             if (!string.IsNullOrEmpty(e.Message) && e.Message == "help")
-                Translator.SendNormalMessage(e.From, RoomHelpMessage(e.From));
+                Translator.SendNormalMessage(e.From, NormalHelpMessage(e.From));
         }
 
         private string RoomHelpMessage(string to)
