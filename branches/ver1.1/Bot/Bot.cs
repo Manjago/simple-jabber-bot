@@ -81,7 +81,7 @@ namespace Temnenkov.SJB.Bot
                     if (MessageHelper.IsLogCommand(msg))
                     {
                         Logger.Log(LogType.Info, String.Format("Send log to {0}", msg.From.User));
-                        SendLog(msg.From.Bare, msg.From.Resource);                        
+                        SendLog(msg.From.Bare, msg.From.Resource);
                     }
 
                     break;
@@ -90,23 +90,24 @@ namespace Temnenkov.SJB.Bot
                         var isRoomMesage = MessageHelper.IsFromRoomMessage(msg, _room);
 
                         if (isRoomMesage)
-                        // значит, в комнате
-                        {
+                            // значит, в комнате
                             _translator.OnRoomPrivateMessage(
                                 new RoomMessageEventArgs(
                             msg.From.Bare != null ? msg.From.Bare : string.Empty,
                             msg.From.Resource != null ? msg.From.Resource : string.Empty,
                             msg.Body != null ? msg.Body : string.Empty,
                             timeStamp, Settings.NameInRoom));
-                        }
-
+                        else
+                            _translator.OnNormalMessage(
+                                new NormalMessageEventArgs(
+                                    msg.From.Bare, msg.Body, timeStamp));
 
                         Logger.Log(LogType.Info, String.Format("room {3} chat message resource {0} bare {1} body {2}", msg.From.Resource, msg.From.Bare, msg.Body, isRoomMesage));
                         if (MessageHelper.IsPingCommand(msg))
                         {
                             Logger.Log(LogType.Info, String.Format("Pinging back to {0}", msg.From.User));
                             if (isRoomMesage)
-                            // значит, в комнате
+                                // значит, в комнате
                                 SendRoomPrivateMessage(_room.JID, msg.From.Resource, PingMessage(msg.From.Resource));
                             else // не в комнате
                                 SendMessage(msg.From.Bare, PingMessage(msg.From.Bare));
@@ -123,6 +124,9 @@ namespace Temnenkov.SJB.Bot
                     break;
                 case MessageType.normal:
                     Logger.Log(LogType.Info, String.Format("normal message received from {0}@{1}: {2}", msg.From.User, msg.From.Server, msg.Body));
+                    _translator.OnNormalMessage(
+                        new NormalMessageEventArgs(
+                            msg.From.Bare, msg.Body, timeStamp));
                     if (MessageHelper.IsShutdownCommand(msg))
                     {
                         Logger.Log(LogType.Info, "shutdown command");
@@ -146,7 +150,7 @@ namespace Temnenkov.SJB.Bot
                 _room.PrivateMessage(to, message);
         }
 
-        private void SendMessage(string to, string message)
+        internal void SendMessage(string to, string message)
         {
             _client.Message(to, message);
         }
@@ -272,9 +276,9 @@ namespace Temnenkov.SJB.Bot
             if (result)
             {
                 Logger.Log(LogType.Info, String.Format("Join in room {0} sucessfully", jid));
-                _room.PublicMessage("PREVED!");                    
+                _room.PublicMessage("PREVED!");
 
-                
+
             }
             else
                 Logger.Log(LogType.Warn, String.Format("Join in room {0} fail", jid));
@@ -284,20 +288,20 @@ namespace Temnenkov.SJB.Bot
 
         void _room_OnJoin(Room room)
         {
-            Logger.Log(LogType.Info, string.Format("join room {0}", 
+            Logger.Log(LogType.Info, string.Format("join room {0}",
                 room.JID));
         }
 
         void _room_OnLeave(Room room, Presence pres)
         {
-            Logger.Log(LogType.Info, string.Format("leave room {0} with presence {1}", 
+            Logger.Log(LogType.Info, string.Format("leave room {0} with presence {1}",
                 room.JID, pres));
-            JoinRoom(string.Format("{0}/{1}",Settings.RoomJid,Settings.NameInRoom));
+            JoinRoom(string.Format("{0}/{1}", Settings.RoomJid, Settings.NameInRoom));
         }
 
         void _room_OnAdminMessage(object sender, Message msg)
         {
-            Logger.Log(LogType.Info, string.Format("admin message {0}", msg.OuterXml));            
+            Logger.Log(LogType.Info, string.Format("admin message {0}", msg.OuterXml));
         }
 
         void _room_OnRoomMessage(object sender, Message msg)
