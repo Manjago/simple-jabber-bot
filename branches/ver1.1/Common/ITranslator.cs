@@ -6,8 +6,10 @@ namespace Temnenkov.SJB.Common
 {
     public interface ITranslator
     {
-        event RoomMessageHandler RoomMessage;
+        event RoomMessageHandler RoomPublicMessage;
+        event RoomMessageHandler RoomPrivateMessage;
         void SendRoomPublicMessage(string roomJid, string message);
+        void SendRoomPrivateMessage(string roomJid, string to, string message);
     }
 
     public class RoomMessageEventArgs : EventArgs

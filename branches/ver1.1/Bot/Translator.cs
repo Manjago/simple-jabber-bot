@@ -18,21 +18,32 @@ namespace Temnenkov.SJB.Bot
             _bot = bot;
         }
 
-        internal void OnRoomMessage(RoomMessageEventArgs e)
+        internal void OnRoomPublicMessage(RoomMessageEventArgs e)
         {
-            if (RoomMessage != null)
-                RoomMessage(this, e);
+            if (RoomPublicMessage != null)
+                RoomPublicMessage(this, e);
+        }
+
+        internal void OnRoomPrivateMessage(RoomMessageEventArgs e)
+        {
+            if (RoomPrivateMessage != null)
+                RoomPrivateMessage(this, e);
         }
 
         #region ITranslator Members
 
-        public event RoomMessageHandler RoomMessage;
+        public event RoomMessageHandler RoomPublicMessage;
+        public event RoomMessageHandler RoomPrivateMessage;
 
         public void SendRoomPublicMessage(string roomJid, string message)
         {
-            _bot.RoomPublicMessage(roomJid, message);
+            _bot.SendRoomPublicMessage(roomJid, message);
         }
 
+        public void SendRoomPrivateMessage(string roomJid, string to, string message)
+        {
+            _bot.SendRoomPrivateMessage(roomJid, to, message);
+        }
         #endregion
     }
 }
