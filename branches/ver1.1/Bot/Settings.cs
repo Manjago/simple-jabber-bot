@@ -54,6 +54,13 @@ namespace Temnenkov.SJB.Bot
             }
         }
 
+        public static string NameInRoom
+        {
+            get
+            {
+                return Get("nameInRoom", string.Empty);
+            }
+        }
         public static string OperatorJid
         {
             get

@@ -9,6 +9,7 @@ using jabber.protocol.iq;
 using System.Text;
 using Temnenkov.SJB.Common;
 using Temnenkov.SJB.ConfLog;
+using Temnenkov.SJB.PingerPlugin;
 
 namespace Temnenkov.SJB.Bot
 {
@@ -19,6 +20,10 @@ namespace Temnenkov.SJB.Bot
         private MessageLogger messageLogger;
         private Room _room;
         private RosterManager _rosterManager;
+        private Translator _translator;
+        // temp
+        private Plugin _ping;
+
 
         internal Bot()
         {
@@ -43,14 +48,27 @@ namespace Temnenkov.SJB.Bot
             _rosterManager.AutoSubscribe = true;
 
             messageLogger = new MessageLogger(new LogWrapper());
+
+            _translator = new Translator(this);
+
+            //temp
+            _ping = new Ping(_translator);
         }
 
         void _client_OnMessage(object sender, Message msg)
         {
+            var timeStamp = DateTime.Now;
             switch (msg.Type)
             {
                 //toDO refactoring
                 case MessageType.groupchat:
+                    if (msg.X == null)
+                        _translator.OnRoomMessage(
+                            new RoomMessageEventArgs(
+                        msg.From.Bare != null ? msg.From.Bare : string.Empty,
+                        msg.From.Resource != null ? msg.From.Resource : string.Empty,
+                        msg.Body != null ? msg.Body : string.Empty,
+                        timeStamp, Settings.NameInRoom));
                     Logger.Log(LogType.Info, String.Format("Groupchat message received from resource {0} in room {1}: {2}", msg.From.Resource, msg.From.Bare, msg.Body));
                     messageLogger.LogMessage(msg.From.Bare != null ? msg.From.Bare : string.Empty, msg.From.Resource != null ? msg.From.Resource : string.Empty, msg.Body != null ? msg.Body : string.Empty, msg.X != null);
 
@@ -262,7 +280,7 @@ namespace Temnenkov.SJB.Bot
         {
             Logger.Log(LogType.Info, string.Format("leave room {0} with presence {1}", 
                 room.JID, pres));
-            JoinRoom(Settings.RoomJid);
+            JoinRoom(string.Format("{0}/{1}",Settings.RoomJid,Settings.NameInRoom));
         }
 
         void _room_OnAdminMessage(object sender, Message msg)
@@ -290,10 +308,17 @@ namespace Temnenkov.SJB.Bot
             Logger.Log(LogType.Info, string.Format("join {0}", participant.Nick));
         }
 
+        internal void RoomPublicMessage(string jid, string message)
+        {
+            if (_room != null &&  _room.JID == jid )
+                _room.PublicMessage(message);
+        }
+
     }
 }
 
-//toDO help screen
+//toDo arch rebuild 
+//toDo help screen
 //todo localization
 //toDo join leave etc
 //toDo prevent doubling of delayed messages

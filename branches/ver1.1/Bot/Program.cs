@@ -14,7 +14,7 @@ namespace Temnenkov.SJB.Bot
             {
                 Logger.Log(LogType.Info, "Successfully connected");
 
-                if (bot.JoinRoom(Settings.RoomJid))
+                if (bot.JoinRoom(string.Format("{0}/{1}", Settings.RoomJid, Settings.NameInRoom)))
                 {
                     Console.WriteLine("Type \"quit\" to end.");
                     while (!Console.ReadLine().Equals("quit", StringComparison.InvariantCultureIgnoreCase))

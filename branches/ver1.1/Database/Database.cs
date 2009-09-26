@@ -7,7 +7,14 @@ using Temnenkov.SJB.Common;
 
 namespace Temnenkov.SJB.Database
 {
-    public class Database: IDisposable
+
+    public interface IDatabase
+    {
+        int ExecuteCommand(string sql, params object[] parameters);
+        IDataReader ExecuteReader(string sql, params object[] parameters);    
+    }
+
+    public class Database: IDisposable, IDatabase
     {
 
         private SQLiteConnection _connection;
