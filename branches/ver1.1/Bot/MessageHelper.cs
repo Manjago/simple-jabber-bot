@@ -24,11 +24,6 @@ namespace Temnenkov.SJB.Bot
                 msg.Body.Equals(cmd, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        internal static bool IsPingCommand(Message msg)
-        {
-            return IsCommang(msg, "ping");
-        }
-
         internal static bool IsLogCommand(Message msg)
         {
             return IsCommang(msg, "log");

@@ -15,32 +15,53 @@ namespace Temnenkov.SJB.PingerPlugin
             Translator.NormalMessage += Translator_NormalMessage;
         }
 
-        void Translator_NormalMessage(object sender, NormalMessageEventArgs e)
-        {
-            if (!string.IsNullOrEmpty(e.Message) && e.Message == "help")
-                Translator.SendNormalMessage(e.From, NormalHelpMessage(e.From));
-        }
-
-        private string RoomHelpMessage(string to)
+        private static string RoomHelpMessage(string to)
         {
             return string.Format("Hi, {0}, use commands \"ping\", \"log\", \"help\".", to);
         }
 
-        private string NormalHelpMessage(string to)
+        private static string NormalHelpMessage(string to)
         {
             return string.Format("Hi, {0}, use commands \"ping\", \"help\".", to);
         }
 
+        private static string PingMessage(string to)
+        {
+            return string.Format("Hey {0}, it's {1}.", to, DateTime.Now);
+        }
+
+        private static bool IsCommand(string message, string cmd)
+        {
+            return !string.IsNullOrEmpty(message) && message.Equals(cmd, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        void Translator_NormalMessage(object sender, NormalMessageEventArgs e)
+        {
+            if (IsCommand(e.Message, "help"))
+                Translator.SendNormalMessage(e.From, NormalHelpMessage(e.From));
+            if (IsCommand(e.Message, "ping"))
+                Translator.SendNormalMessage(e.From, PingMessage(e.From));
+        }
+
         void Translator_RoomPrivateMessage(object sender, RoomMessageEventArgs e)
         {
-            if (e.From != e.Me && !string.IsNullOrEmpty(e.Message) && e.Message == "help")
+            if (e.From.Equals(e.Me, StringComparison.InvariantCultureIgnoreCase)) return;
+
+            if (IsCommand(e.Message, "help"))
                 Translator.SendRoomPrivateMessage(e.RoomJid, e.From, RoomHelpMessage(e.From));
+
+            if (IsCommand(e.Message, "ping"))
+                Translator.SendRoomPrivateMessage(e.RoomJid, e.From, PingMessage(e.From));
         }
 
         void Translator_RoomMessage(object sender, RoomMessageEventArgs e)
         {
-            if (e.From != e.Me && !string.IsNullOrEmpty(e.Message) && e.Message == "help")
+            if (e.From.Equals(e.Me, StringComparison.InvariantCultureIgnoreCase)) return;
+
+            if (IsCommand(e.Message, "help"))
                 Translator.SendRoomPublicMessage(e.RoomJid, RoomHelpMessage(e.From));
+            if (IsCommand(e.Message, "ping"))
+                Translator.SendRoomPrivateMessage(e.RoomJid, e.From, PingMessage(e.From));
         }
 
     }
