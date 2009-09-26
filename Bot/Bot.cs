@@ -63,7 +63,7 @@ namespace Temnenkov.SJB.Bot
                 //toDO refactoring
                 case MessageType.groupchat:
                     if (msg.X == null)
-                        _translator.OnRoomMessage(
+                        _translator.OnRoomPublicMessage(
                             new RoomMessageEventArgs(
                         msg.From.Bare != null ? msg.From.Bare : string.Empty,
                         msg.From.Resource != null ? msg.From.Resource : string.Empty,
@@ -75,7 +75,7 @@ namespace Temnenkov.SJB.Bot
                     if (MessageHelper.IsPingCommand(msg))
                     {
                         Logger.Log(LogType.Info, String.Format("Pinging back to {0}", msg.From.User));
-                        SendPrivateMessage(msg.From.Resource, String.Format("Hey {0}, it's {1}.", msg.From.Resource, DateTime.Now));
+                        SendRoomPrivateMessage(_room.JID, msg.From.Resource, String.Format("Hey {0}, it's {1}.", msg.From.Resource, DateTime.Now));
                     }
 
                     if (MessageHelper.IsLogCommand(msg))
@@ -89,13 +89,25 @@ namespace Temnenkov.SJB.Bot
                     {
                         var isRoomMesage = MessageHelper.IsFromRoomMessage(msg, _room);
 
+                        if (isRoomMesage)
+                        // значит, в комнате
+                        {
+                            _translator.OnRoomPrivateMessage(
+                                new RoomMessageEventArgs(
+                            msg.From.Bare != null ? msg.From.Bare : string.Empty,
+                            msg.From.Resource != null ? msg.From.Resource : string.Empty,
+                            msg.Body != null ? msg.Body : string.Empty,
+                            timeStamp, Settings.NameInRoom));
+                        }
+
+
                         Logger.Log(LogType.Info, String.Format("room {3} chat message resource {0} bare {1} body {2}", msg.From.Resource, msg.From.Bare, msg.Body, isRoomMesage));
                         if (MessageHelper.IsPingCommand(msg))
                         {
                             Logger.Log(LogType.Info, String.Format("Pinging back to {0}", msg.From.User));
                             if (isRoomMesage)
-                                // значит, в комнате
-                                SendPrivateMessage(msg.From.Resource, PingMessage(msg.From.Resource));
+                            // значит, в комнате
+                                SendRoomPrivateMessage(_room.JID, msg.From.Resource, PingMessage(msg.From.Resource));
                             else // не в комнате
                                 SendMessage(msg.From.Bare, PingMessage(msg.From.Bare));
                         }
@@ -128,9 +140,9 @@ namespace Temnenkov.SJB.Bot
             return string.Format("Hey {0}, it's {1}.", whom, DateTime.Now);
         }
 
-        private void SendPrivateMessage(string to, string message)
+        internal void SendRoomPrivateMessage(string roomJid, string to, string message)
         {
-            if (_room != null && _room.IsParticipating)
+            if (_room != null && _room.IsParticipating && _room.JID == roomJid)
                 _room.PrivateMessage(to, message);
         }
 
@@ -147,7 +159,7 @@ namespace Temnenkov.SJB.Bot
 
             var sb = new MessageLogger(new LogWrapper()).GetLog(jid, firstDate, secondDate, true);
             if (sb.Length != 0)
-                SendPrivateMessage(to, sb.ToString());
+                SendRoomPrivateMessage(_room.JID, to, sb.ToString());
         }
 
         void _client_OnError(object sender, Exception ex)
@@ -308,9 +320,9 @@ namespace Temnenkov.SJB.Bot
             Logger.Log(LogType.Info, string.Format("join {0}", participant.Nick));
         }
 
-        internal void RoomPublicMessage(string jid, string message)
+        internal void SendRoomPublicMessage(string jid, string message)
         {
-            if (_room != null &&  _room.JID == jid )
+            if (_room != null && _room.IsParticipating && _room.JID == jid)
                 _room.PublicMessage(message);
         }
 
