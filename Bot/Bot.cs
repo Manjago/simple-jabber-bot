@@ -72,12 +72,6 @@ namespace Temnenkov.SJB.Bot
                     Logger.Log(LogType.Info, String.Format("Groupchat message received from resource {0} in room {1}: {2}", msg.From.Resource, msg.From.Bare, msg.Body));
                     messageLogger.LogMessage(msg.From.Bare != null ? msg.From.Bare : string.Empty, msg.From.Resource != null ? msg.From.Resource : string.Empty, msg.Body != null ? msg.Body : string.Empty, msg.X != null);
 
-                    if (MessageHelper.IsPingCommand(msg))
-                    {
-                        Logger.Log(LogType.Info, String.Format("Pinging back to {0}", msg.From.User));
-                        SendRoomPrivateMessage(_room.JID, msg.From.Resource, String.Format("Hey {0}, it's {1}.", msg.From.Resource, DateTime.Now));
-                    }
-
                     if (MessageHelper.IsLogCommand(msg))
                     {
                         Logger.Log(LogType.Info, String.Format("Send log to {0}", msg.From.User));
@@ -103,15 +97,6 @@ namespace Temnenkov.SJB.Bot
                                     msg.From.Bare, msg.Body, timeStamp));
 
                         Logger.Log(LogType.Info, String.Format("room {3} chat message resource {0} bare {1} body {2}", msg.From.Resource, msg.From.Bare, msg.Body, isRoomMesage));
-                        if (MessageHelper.IsPingCommand(msg))
-                        {
-                            Logger.Log(LogType.Info, String.Format("Pinging back to {0}", msg.From.User));
-                            if (isRoomMesage)
-                                // значит, в комнате
-                                SendRoomPrivateMessage(_room.JID, msg.From.Resource, PingMessage(msg.From.Resource));
-                            else // не в комнате
-                                SendMessage(msg.From.Bare, PingMessage(msg.From.Bare));
-                        }
 
                         if (MessageHelper.IsLogCommand(msg))
                         {
