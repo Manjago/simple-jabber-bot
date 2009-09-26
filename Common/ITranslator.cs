@@ -1,0 +1,34 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Temnenkov.SJB.Common
+{
+    public interface ITranslator
+    {
+        event RoomMessageHandler RoomMessage;
+        void SendRoomPublicMessage(string roomJid, string message);
+    }
+
+    public class RoomMessageEventArgs : EventArgs
+    {
+        public string RoomJid { get; private set; }
+        public string From { get; private set; }
+        public string Message { get; private set; }
+        public DateTime Date { get; private set; }
+        public string Me { get; private set; }
+        private RoomMessageEventArgs() { }
+        public RoomMessageEventArgs(string roomJid,
+            string from, string message, DateTime date, string me) 
+        {
+            RoomJid = roomJid;
+            From = from;
+            Message = message;
+            Date = date;
+            Me = me;
+        }
+    }
+
+    public delegate void RoomMessageHandler(Object sender, RoomMessageEventArgs e);
+
+}
