@@ -38,16 +38,5 @@ namespace Temnenkov.SJB.Bot
                    msg.From.Bare == room.JID.Bare;        
         }
 
-        internal static bool IsShutdownCommand(Message msg)
-        {
-            return IsCommang(msg, "shutdown") && IsOperator(msg);
-        }
-
-        internal static bool IsOperator(Message msg)
-        {
-            return msg.From.Bare != null && msg.From.Bare == Settings.OperatorJid;
-        }
-
-
     }
 }
