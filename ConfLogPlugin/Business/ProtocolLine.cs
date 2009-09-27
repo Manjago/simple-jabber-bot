@@ -41,10 +41,24 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
 
     internal class ProtocolLine : PersistentLine
     {
-        internal string Jid { get; private set; }
-        internal string From { get; private set; }
-        internal string Message { get; private set; }
-        internal string Hash { get; private set; }
+        private string Jid { get; set; }
+        private string From { get; set; }
+        private string Message { get; set; }
+        private string Hash 
+        {
+            get
+            {
+                return Utils.GetMd5Hash(string.Format("{0}{1}{2}",
+                    Jid, From, Message));
+            }
+        }
+        private bool IsValid
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(Message) && !string.IsNullOrEmpty(From);
+            }
+        }
 
         internal ProtocolLine(string jid, string from, string message, DateTime date)
             : base(LineTypeEnum.Normal, date)
@@ -64,9 +78,9 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
 
         public override void Save(IDatabase db)
         {
-            if (db != null)
+            if (db != null && IsValid)
                 db.ExecuteCommand("INSERT INTO [Log] ([Jid], [From], [Message], [Date], [Hash], [Type]) VALUES (?, ?, ?, ?, ?, ?);",
-                Jid, From, Message, Date, Utils.GetMd5Hash(Message), (char)LineType);
+                Jid, From, Message, Date, Hash, (char)LineType);
         }
 
     }
