@@ -11,5 +11,8 @@ namespace Temnenkov.SJB.Common
         {
             Translator = translator;
         }
+        public virtual void Init()
+        {
+        }
     }
 }

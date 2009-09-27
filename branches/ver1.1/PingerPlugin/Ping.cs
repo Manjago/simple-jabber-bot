@@ -7,12 +7,11 @@ namespace Temnenkov.SJB.PingerPlugin
 {
     public sealed class Ping : Plugin
     {
-        private string _operatorJid;
+        public string OperatorJid { get; set; }
 
-        public Ping(ITranslator translator, string operatorJid)
+        public Ping(ITranslator translator)
             : base(translator)
         {
-            _operatorJid = operatorJid;
             Translator.RoomPublicMessage += Translator_RoomMessage;
             Translator.RoomPrivateMessage += Translator_RoomPrivateMessage;
             Translator.NormalMessage += Translator_NormalMessage;
@@ -44,7 +43,9 @@ namespace Temnenkov.SJB.PingerPlugin
                 Translator.SendNormalMessage(e.From, NormalHelpMessage(e.From));
             if (IsCommand(e.Message, "ping"))
                 Translator.SendNormalMessage(e.From, PingMessage(e.From));
-            if (IsCommand(e.Message, "shutdown") & _operatorJid.Equals(e.From, StringComparison.InvariantCultureIgnoreCase))
+            if (IsCommand(e.Message, "shutdown") && 
+                !string.IsNullOrEmpty(OperatorJid) && 
+                OperatorJid.Equals(e.From, StringComparison.InvariantCultureIgnoreCase))
                 Environment.Exit(-2);
         }
 

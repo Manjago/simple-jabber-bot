@@ -15,7 +15,7 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
         SomebodyLeave = 'L'
     }
 
-    internal abstract class PersistentLine
+    internal abstract class PersistentLine : PersistentObject
     {
         protected LineTypeEnum LineType { get; private set; }
         protected DateTime Date { get; private set; }
@@ -31,7 +31,12 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
             Date = date;
         }
 
-        internal abstract void Save(IDatabase db);
+        public static void Check(IDatabase db)
+        {
+            if (!db.TableExists("Log"))
+                db.ExecuteCommand(Sql.Create);
+        }
+
     }
 
     internal class ProtocolLine : PersistentLine
@@ -41,7 +46,8 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
         internal string Message { get; private set; }
         internal string Hash { get; private set; }
 
-        internal ProtocolLine(string jid, string from, string message, DateTime date) : base(LineTypeEnum.Normal, date)
+        internal ProtocolLine(string jid, string from, string message, DateTime date)
+            : base(LineTypeEnum.Normal, date)
         {
             Jid = jid;
             From = from;
@@ -56,10 +62,11 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
             Message = message;
         }
 
-        internal override void Save(IDatabase db)
+        public override void Save(IDatabase db)
         {
-            db.ExecuteCommand("INSERT INTO [Log] ([Jid], [From], [Message], [Date], [Hash], [Type]) VALUES (?, ?, ?, ?, ?, ?);",
-                Jid, From, Message, Date, Utils.GetMd5Hash(Message), LineType);
+            if (db != null)
+                db.ExecuteCommand("INSERT INTO [Log] ([Jid], [From], [Message], [Date], [Hash], [Type]) VALUES (?, ?, ?, ?, ?, ?);",
+                Jid, From, Message, Date, Utils.GetMd5Hash(Message), (char)LineType);
         }
 
     }
@@ -67,7 +74,7 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
     internal class ProtocolDelayLine : ProtocolLine
     {
         internal ProtocolDelayLine(string jid, string from, string message, DateTime date)
-            : base(jid, from, message, date, LineTypeEnum.Delay) {   }
+            : base(jid, from, message, date, LineTypeEnum.Delay) { }
 
     }
 

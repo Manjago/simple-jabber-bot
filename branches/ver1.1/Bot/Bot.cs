@@ -10,6 +10,7 @@ using System.Text;
 using Temnenkov.SJB.Common;
 using Temnenkov.SJB.ConfLog;
 using Temnenkov.SJB.PingerPlugin;
+using Temnenkov.SJB.ConfLogPlugin;
 
 namespace Temnenkov.SJB.Bot
 {
@@ -23,6 +24,7 @@ namespace Temnenkov.SJB.Bot
         private Translator _translator;
         // temp
         private Plugin _ping;
+        private ConfLogger _confLog;
 
 
         internal Bot()
@@ -52,7 +54,13 @@ namespace Temnenkov.SJB.Bot
             _translator = new Translator(this);
 
             //temp
-            _ping = new Ping(_translator, Settings.OperatorJid);
+            _ping = new Ping(_translator)
+            {
+                OperatorJid = Settings.OperatorJid
+            };
+            _confLog = new ConfLogger(_translator);
+            _ping.Init();
+            _confLog.Init();
         }
 
         void _client_OnMessage(object sender, Message msg)
@@ -69,6 +77,13 @@ namespace Temnenkov.SJB.Bot
                         msg.From.Resource != null ? msg.From.Resource : string.Empty,
                         msg.Body != null ? msg.Body : string.Empty,
                         timeStamp, Settings.NameInRoom));
+                    else
+                        _translator.OnRoomDelayPublicMessage (
+                            new RoomDelayMessageEventArgs(
+                        msg.From.Bare != null ? msg.From.Bare : string.Empty,
+                        msg.From.Resource != null ? msg.From.Resource : string.Empty,
+                        msg.Body != null ? msg.Body : string.Empty,
+                        timeStamp, Settings.NameInRoom, timeStamp /*временно*/));
                     Logger.Log(LogType.Info, String.Format("Groupchat message received from resource {0} in room {1}: {2}", msg.From.Resource, msg.From.Bare, msg.Body));
                     messageLogger.LogMessage(msg.From.Bare != null ? msg.From.Bare : string.Empty, msg.From.Resource != null ? msg.From.Resource : string.Empty, msg.Body != null ? msg.Body : string.Empty, msg.X != null);
 
@@ -313,6 +328,7 @@ namespace Temnenkov.SJB.Bot
     }
 }
 
+// toDO convert base - 1.hash 2. structure
 //toDo arch rebuild 
 //toDo help screen
 //todo localization

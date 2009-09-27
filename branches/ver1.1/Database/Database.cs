@@ -7,16 +7,8 @@ using Temnenkov.SJB.Common;
 
 namespace Temnenkov.SJB.Database
 {
-
-    public interface IDatabase
+    public class Database: IDatabase
     {
-        int ExecuteCommand(string sql, params object[] parameters);
-        IDataReader ExecuteReader(string sql, params object[] parameters);    
-    }
-
-    public class Database: IDisposable, IDatabase
-    {
-
         private SQLiteConnection _connection;
 
         public Database(string fileName)
@@ -29,28 +21,6 @@ namespace Temnenkov.SJB.Database
                 fileName += ".sqlite";
             string fullName = Path.Combine(dirName, fileName);
             _connection = new SQLiteConnection(String.Format("Data Source={0}", fullName));
-            _connection.Open();
-        }
-
-        public void Dispose()
-        {
-            _connection.Close();
-        }
-
-        public int ExecuteCommand(string sql, params object[] parameters)
-        {
-            var command = new SQLiteCommand(sql, _connection);
-            foreach (var p in parameters)
-                command.Parameters.Add(GetParameter(p));
-            return command.ExecuteNonQuery();
-        }
-
-        public IDataReader ExecuteReader(string sql, params object[] parameters)
-        {
-            var command = new SQLiteCommand(sql, _connection);
-            foreach (var p in parameters)
-                command.Parameters.Add(GetParameter(p));
-            return command.ExecuteReader();
         }
 
         private SQLiteParameter GetParameter(object parameter)
@@ -65,9 +35,62 @@ namespace Temnenkov.SJB.Database
                 return new SQLiteParameter(DbType.DateTime, parameter);
             if (parameter is bool)
                 return new SQLiteParameter(DbType.Boolean, parameter);
+            if (parameter is char)
+                return new SQLiteParameter(DbType.StringFixedLength, 1) { Value = parameter };
             return null;
         }
 
 
+
+        #region IDatabase Members
+
+        public int ExecuteCommand(string sql, params object[] parameters)
+        {
+            _connection.Open();
+            try
+            {
+                var command = new SQLiteCommand(sql, _connection);
+                foreach (var p in parameters)
+                    command.Parameters.Add(GetParameter(p));
+                return command.ExecuteNonQuery();
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+        }
+
+        public IDataReader ExecuteReader(string sql, params object[] parameters)
+        {
+            _connection.Open();
+            try
+            {
+                var command = new SQLiteCommand(sql, _connection);
+                foreach (var p in parameters)
+                    command.Parameters.Add(GetParameter(p));
+                return command.ExecuteReader();
+            }
+            finally
+            {
+                _connection.Close();
+            }
+        }
+
+        public bool TableExists(string tableName)
+        {
+            _connection.Open();
+            try
+            {
+                var test = _connection.GetSchema("Tables").Select(string.Format("Table_Name = '{0}'", tableName));
+                return test.Length != 0;
+            }
+            finally
+            {
+                _connection.Close();
+            }
+        }
+
+        #endregion
     }
 }
