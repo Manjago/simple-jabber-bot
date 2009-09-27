@@ -36,10 +36,17 @@ namespace Temnenkov.SJB.Bot
                 NormalMessage(this, e);
         }
 
+        internal void OnRoomDelayPublicMessage(RoomDelayMessageEventArgs e)
+        {
+            if (RoomDelayPublicMessage != null)
+                RoomDelayPublicMessage(this, e);
+        }
+
         #region ITranslator Members
 
         public event RoomMessageHandler RoomPublicMessage;
         public event RoomMessageHandler RoomPrivateMessage;
+        public event RoomDelayMessageHandler RoomDelayPublicMessage;
         public event NormalMessageHandler NormalMessage;
 
         public void SendRoomPublicMessage(string roomJid, string message)

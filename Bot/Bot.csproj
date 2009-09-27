@@ -66,6 +66,10 @@
       <Project>{75F1F983-6D1E-4A7A-A375-75A1A30C8498}</Project>
       <Name>Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ConfLogPlugin\ConfLogPlugin.csproj">
+      <Project>{C67C293E-DFA8-42F4-8649-0B2FE80D04B7}</Project>
+      <Name>ConfLogPlugin</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ConfLog\ConfLog.csproj">
       <Project>{830841A3-08FC-49D4-AF11-07914A440E33}</Project>
       <Name>ConfLog</Name>
