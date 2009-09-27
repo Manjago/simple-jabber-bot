@@ -248,6 +248,7 @@ namespace Temnenkov.SJB.Bot
                 _room.OnAdminMessage -= new MessageHandler(_room_OnAdminMessage);
                 _room.OnLeave -= new RoomPresenceHandler(_room_OnLeave);
                 _room.OnJoin -= new RoomEvent(_room_OnJoin);
+                _room.OnSubjectChange -= new MessageHandler(_room_OnSubjectChange);
             }
 
 
@@ -267,11 +268,12 @@ namespace Temnenkov.SJB.Bot
             _room.OnAdminMessage += new MessageHandler(_room_OnAdminMessage);
             _room.OnLeave += new RoomPresenceHandler(_room_OnLeave);
             _room.OnJoin += new RoomEvent(_room_OnJoin);
+            _room.OnSubjectChange += new MessageHandler(_room_OnSubjectChange);
 
             if (result)
             {
                 Logger.Log(LogType.Info, String.Format("Join in room {0} sucessfully", jid));
-                _room.PublicMessage("PREVED!");
+                _room.PublicMessage("Превед!");
 
 
             }
@@ -279,6 +281,27 @@ namespace Temnenkov.SJB.Bot
                 Logger.Log(LogType.Warn, String.Format("Join in room {0} fail", jid));
 
             return result;
+        }
+
+        void _room_OnSubjectChange(object sender, Message msg)
+        {
+            Logger.Log(LogType.Info, string.Format("{1} change subject {0}",
+                string.IsNullOrEmpty(msg.Subject) ? string.Empty : msg.Subject, 
+                msg.From.Resource));
+
+            var room = sender as Room;
+
+            if (msg.X == null)
+                _translator.OnChangeSubject(new ChangeSubjectEventArgs(
+                    room.JID.Bare, msg.From.Resource,
+                    string.IsNullOrEmpty(msg.Subject) ? string.Empty : msg.Subject,
+                    DateTime.Now));
+            else
+                _translator.OnChangeSubjectDelay(new ChangeSubjectDelayEventArgs(
+                    room.JID.Bare, msg.From.Resource,
+                    string.IsNullOrEmpty(msg.Subject) ? string.Empty : msg.Subject,
+                    DateTime.Now, DateTime.Now));
+                    
         }
 
         void _room_OnJoin(Room room)
@@ -329,6 +352,8 @@ namespace Temnenkov.SJB.Bot
 }
 
 // toDO convert base - 1.hash 2. structure
+// todo base check const
+
 //toDo arch rebuild 
 //toDo help screen
 //todo localization

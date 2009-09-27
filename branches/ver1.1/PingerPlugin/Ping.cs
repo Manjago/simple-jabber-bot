@@ -19,17 +19,17 @@ namespace Temnenkov.SJB.PingerPlugin
 
         private static string RoomHelpMessage(string to)
         {
-            return string.Format("Hi, {0}, use commands \"ping\", \"log\", \"help\".", to);
+            return string.Format("Привет, {0}! Используй команды \"ping\", \"log\", \"help\".", to);
         }
 
         private static string NormalHelpMessage(string to)
         {
-            return string.Format("Hi, {0}, use commands \"ping\", \"help\".", to);
+            return string.Format("Привет, {0}! Используй команды \"ping\", \"help\".", to);
         }
 
         private static string PingMessage(string to)
         {
-            return string.Format("Hey {0}, it's {1}.", to, DateTime.Now);
+            return string.Format("Привет {0}, сейчас {1}.", to, DateTime.Now);
         }
 
         private static bool IsCommand(string message, string cmd)

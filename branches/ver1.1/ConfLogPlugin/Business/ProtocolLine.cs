@@ -11,6 +11,7 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
         Normal = 'N',
         Delay = 'D',
         TopicChange = 'T',
+        DeleayTopicChange = 'S',
         SomebodyJoin = 'J',
         SomebodyLeave = 'L'
     }
@@ -61,11 +62,8 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
         }
 
         internal ProtocolLine(string jid, string from, string message, DateTime date)
-            : base(LineTypeEnum.Normal, date)
+            : this(jid, from, message, date, LineTypeEnum.Normal)
         {
-            Jid = jid;
-            From = from;
-            Message = message;
         }
 
         protected ProtocolLine(string jid, string from, string message, DateTime date, LineTypeEnum lineType)
@@ -91,5 +89,48 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
             : base(jid, from, message, date, LineTypeEnum.Delay) { }
 
     }
+
+    internal class ChangeSubjectLine : PersistentLine
+    {
+        private string Jid { get; set; }
+        private string Who { get; set; }
+        private string Subject { get; set; }
+        private string Hash
+        {
+            get
+            {
+                return Utils.GetMd5Hash(string.Format("{0}{1}{2}",
+                    Jid, Who, Subject));
+            }
+        }
+
+        internal ChangeSubjectLine(string jid, string who, string subject, DateTime date)
+            : this(jid, who, subject, date, LineTypeEnum.TopicChange)
+        {
+        }
+
+        protected ChangeSubjectLine(string jid, string who, string subject, DateTime date, LineTypeEnum lineType)
+            : base(lineType, date)
+        {
+            Jid = jid;
+            Who = who;
+            Subject = subject;
+        }
+
+        public override void Save(IDatabase db)
+        {
+            if (db != null)
+                db.ExecuteCommand("INSERT INTO [Log] ([Jid], [From], [Message], [Date], [Hash], [Type]) VALUES (?, ?, ?, ?, ?, ?);",
+                Jid, Who, Subject, Date, Hash, (char)LineType);
+        }
+    }
+
+    internal class ChangeSubjectDelayLine : ChangeSubjectLine
+    {
+        internal ChangeSubjectDelayLine(string jid, string who, string subject, DateTime date)
+            : base(jid, who, subject, date, LineTypeEnum.DeleayTopicChange) { }
+
+    }
+
 
 }
