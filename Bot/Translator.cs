@@ -42,12 +42,25 @@ namespace Temnenkov.SJB.Bot
                 RoomDelayPublicMessage(this, e);
         }
 
+        internal void OnChangeSubject(ChangeSubjectEventArgs e)
+        {
+            if (ChangeSubject != null)
+                ChangeSubject(this, e);
+        }
+
+        internal void OnChangeSubjectDelay(ChangeSubjectDelayEventArgs e)
+        {
+            if (ChangeSubjectDelay != null)
+                ChangeSubjectDelay(this, e);
+        }
         #region ITranslator Members
 
         public event RoomMessageHandler RoomPublicMessage;
         public event RoomMessageHandler RoomPrivateMessage;
         public event RoomDelayMessageHandler RoomDelayPublicMessage;
         public event NormalMessageHandler NormalMessage;
+        public event ChangeSubjectHandler ChangeSubject;
+        public event ChangeSubjectDelayHandler ChangeSubjectDelay;
 
         public void SendRoomPublicMessage(string roomJid, string message)
         {

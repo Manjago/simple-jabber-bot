@@ -15,6 +15,8 @@ namespace Temnenkov.SJB.ConfLogPlugin
         {
             Translator.RoomPublicMessage += Translator_RoomPublicMessage;
             Translator.RoomDelayPublicMessage += Translator_RoomDelayPublicMessage;
+            Translator.ChangeSubject += Translator_ChangeSubject;
+            Translator.ChangeSubjectDelay += Translator_ChangeSubjectDelay;
         }
 
         public override void Init()
@@ -33,5 +35,16 @@ namespace Temnenkov.SJB.ConfLogPlugin
         {
             new ProtocolLine(e.RoomJid, e.From, e.Message, e.Date).Save(_db);
         }
+
+        void Translator_ChangeSubject(object sender, ChangeSubjectEventArgs e)
+        {
+            new ChangeSubjectLine(e.RoomJid, e.Who, e.Subject, e.Date).Save(_db);
+        }
+
+        void Translator_ChangeSubjectDelay(object sender, ChangeSubjectDelayEventArgs e)
+        {
+            new ChangeSubjectDelayLine(e.RoomJid, e.Who, e.Subject, e.Date).Save(_db);
+        }
+
     }
 }
