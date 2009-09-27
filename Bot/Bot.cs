@@ -52,7 +52,7 @@ namespace Temnenkov.SJB.Bot
             _translator = new Translator(this);
 
             //temp
-            _ping = new Ping(_translator);
+            _ping = new Ping(_translator, Settings.OperatorJid);
         }
 
         void _client_OnMessage(object sender, Message msg)
@@ -112,11 +112,6 @@ namespace Temnenkov.SJB.Bot
                     _translator.OnNormalMessage(
                         new NormalMessageEventArgs(
                             msg.From.Bare, msg.Body, timeStamp));
-                    if (MessageHelper.IsShutdownCommand(msg))
-                    {
-                        Logger.Log(LogType.Info, "shutdown command");
-                        Environment.Exit(0);
-                    }
                     break;
                 default:
                     Logger.Log(LogType.Info, String.Format("default message received from {0}@{1}: {2}", msg.From.User, msg.From.Server, msg.Body));
