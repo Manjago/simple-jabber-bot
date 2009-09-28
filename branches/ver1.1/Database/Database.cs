@@ -2,14 +2,13 @@
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
-using System.Reflection;
 using Temnenkov.SJB.Common;
 
 namespace Temnenkov.SJB.Database
 {
     public class Database: IDatabase
     {
-        private SQLiteConnection _connection;
+        private readonly SQLiteConnection _connection;
 
         public Database(string fileName)
             : this(Path.GetDirectoryName(Utils.GetExecutablePath()), fileName)
@@ -19,11 +18,11 @@ namespace Temnenkov.SJB.Database
         {
             if (!fileName.ToLower().EndsWith(".sqlite"))
                 fileName += ".sqlite";
-            string fullName = Path.Combine(dirName, fileName);
+            var fullName = Path.Combine(dirName, fileName);
             _connection = new SQLiteConnection(String.Format("Data Source={0}", fullName));
         }
 
-        private SQLiteParameter GetParameter(object parameter)
+        private static SQLiteParameter GetParameter(object parameter)
         {
             if (parameter is string)
                 return new SQLiteParameter(DbType.String, parameter);

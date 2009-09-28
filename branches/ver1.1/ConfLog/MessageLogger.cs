@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
-using Temnenkov.SJB.Database;
 using Temnenkov.SJB.Common;
 
 namespace Temnenkov.SJB.ConfLog
@@ -9,8 +7,8 @@ namespace Temnenkov.SJB.ConfLog
     public class MessageLogger
     {
         private Database.Database _db;
-        private ILogger _log;
-        private string _dirName;
+        private readonly ILogger _log;
+        private readonly string _dirName;
 
         public MessageLogger(ILogger log)
         {
@@ -26,10 +24,7 @@ namespace Temnenkov.SJB.ConfLog
         {
             if (_db != null) return;
 
-            if (string.IsNullOrEmpty(_dirName))
-                _db = new Database.Database("Log");
-            else
-                _db = new Database.Database(_dirName, "Log");
+            _db = string.IsNullOrEmpty(_dirName) ? new Database.Database("Log") : new Database.Database(_dirName, "Log");
 
             try
             {

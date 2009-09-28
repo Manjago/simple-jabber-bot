@@ -5,8 +5,6 @@ using jabber.protocol.client;
 using jabber;
 using jabber.connection.sasl;
 using jabber.connection;
-using jabber.protocol.iq;
-using System.Text;
 using Temnenkov.SJB.Common;
 using Temnenkov.SJB.ConfLog;
 using Temnenkov.SJB.PingerPlugin;
@@ -16,40 +14,43 @@ namespace Temnenkov.SJB.Bot
 {
     internal class Bot
     {
-        private JabberClient _client;
-        private ConferenceManager _conferenceManager;
-        private MessageLogger messageLogger;
+        private readonly JabberClient _client;
+        private readonly ConferenceManager _conferenceManager;
+        private readonly MessageLogger _messageLogger;
         private Room _room;
-        private RosterManager _rosterManager;
-        private Translator _translator;
+        private readonly RosterManager _rosterManager;
+        private readonly Translator _translator;
         // temp
-        private Plugin _ping;
-        private ConfLogger _confLog;
+        private readonly Plugin _ping;
+        private readonly ConfLogger _confLog;
 
 
         internal Bot()
         {
-            _client = new JabberClient();
-            _client.AutoRoster = true;
-            _client.AutoLogin = false;
-            _client.Resource = String.Format("SimpleJabberBot {0}", Environment.Version.ToString());
+            _client = new JabberClient
+                      	{
+                      		AutoRoster = true,
+                      		AutoLogin = false,
+                      		Resource = String.Format("SimpleJabberBot {0}", Environment.Version)
+                      	};
 
-            _client.OnInvalidCertificate += new System.Net.Security.RemoteCertificateValidationCallback(_client_OnInvalidCertificate);
-            _client.OnLoginRequired += new bedrock.ObjectHandler(_client_OnLoginRequired);
-            _client.OnRegisterInfo += new RegisterInfoHandler(_client_OnRegisterInfo);
-            _client.OnRegistered += new IQHandler(_client_OnRegistered);
-            _client.OnError += new bedrock.ExceptionHandler(_client_OnError);
-            _client.OnMessage += new MessageHandler(_client_OnMessage);
+        	_client.OnInvalidCertificate += ClientOnInvalidCertificate;
+            _client.OnLoginRequired += ClientOnLoginRequired;
+            _client.OnRegisterInfo += ClientOnRegisterInfo;
+            _client.OnRegistered += ClientOnRegistered;
+            _client.OnError += ClientOnError;
+            _client.OnMessage += ClientOnMessage;
 
-            _conferenceManager = new ConferenceManager();
-            _conferenceManager.Stream = _client;
+            _conferenceManager = new ConferenceManager {Stream = _client};
 
-            _rosterManager = new RosterManager();
-            _rosterManager.Stream = _client;
-            _rosterManager.AutoAllow = AutoSubscriptionHanding.AllowAll;
-            _rosterManager.AutoSubscribe = true;
+        	_rosterManager = new RosterManager
+        	                 	{
+        	                 		Stream = _client,
+        	                 		AutoAllow = AutoSubscriptionHanding.AllowAll,
+        	                 		AutoSubscribe = true
+        	                 	};
 
-            messageLogger = new MessageLogger(new LogWrapper());
+        	_messageLogger = new MessageLogger(new LogWrapper());
 
             _translator = new Translator(this);
 
@@ -63,29 +64,38 @@ namespace Temnenkov.SJB.Bot
             _confLog.Init();
         }
 
-        void _client_OnMessage(object sender, Message msg)
+    	public RosterManager RosterManager1
+    	{
+    		get { return _rosterManager; }
+    	}
+
+    	void ClientOnMessage(object sender, Message msg)
         {
             var timeStamp = DateTime.Now;
             switch (msg.Type)
             {
                 //toDO refactoring
                 case MessageType.groupchat:
+#pragma warning disable 618,612
                     if (msg.X == null)
+#pragma warning restore 618,612
                         _translator.OnRoomPublicMessage(
                             new RoomMessageEventArgs(
-                        msg.From.Bare != null ? msg.From.Bare : string.Empty,
-                        msg.From.Resource != null ? msg.From.Resource : string.Empty,
-                        msg.Body != null ? msg.Body : string.Empty,
+                        msg.From.Bare ?? string.Empty,
+                        msg.From.Resource ?? string.Empty,
+                        msg.Body ?? string.Empty,
                         timeStamp, Settings.NameInRoom));
                     else
                         _translator.OnRoomDelayPublicMessage (
                             new RoomDelayMessageEventArgs(
-                        msg.From.Bare != null ? msg.From.Bare : string.Empty,
-                        msg.From.Resource != null ? msg.From.Resource : string.Empty,
-                        msg.Body != null ? msg.Body : string.Empty,
+                        msg.From.Bare ?? string.Empty,
+                        msg.From.Resource ?? string.Empty,
+                        msg.Body ?? string.Empty,
                         timeStamp, Settings.NameInRoom, timeStamp /*временно*/));
                     Logger.Log(LogType.Info, String.Format("Groupchat message received from resource {0} in room {1}: {2}", msg.From.Resource, msg.From.Bare, msg.Body));
-                    messageLogger.LogMessage(msg.From.Bare != null ? msg.From.Bare : string.Empty, msg.From.Resource != null ? msg.From.Resource : string.Empty, msg.Body != null ? msg.Body : string.Empty, msg.X != null);
+#pragma warning disable 618,612
+                    _messageLogger.LogMessage(msg.From.Bare ?? string.Empty, msg.From.Resource ?? string.Empty, msg.Body ?? string.Empty, msg.X != null);
+#pragma warning restore 618,612
 
                     if (MessageHelper.IsLogCommand(msg))
                     {
@@ -102,9 +112,9 @@ namespace Temnenkov.SJB.Bot
                             // значит, в комнате
                             _translator.OnRoomPrivateMessage(
                                 new RoomMessageEventArgs(
-                            msg.From.Bare != null ? msg.From.Bare : string.Empty,
-                            msg.From.Resource != null ? msg.From.Resource : string.Empty,
-                            msg.Body != null ? msg.Body : string.Empty,
+                            msg.From.Bare ?? string.Empty,
+                            msg.From.Resource ?? string.Empty,
+                            msg.Body ?? string.Empty,
                             timeStamp, Settings.NameInRoom));
                         else
                             _translator.OnNormalMessage(
@@ -134,12 +144,7 @@ namespace Temnenkov.SJB.Bot
             }
         }
 
-        private string PingMessage(string whom)
-        {
-            return string.Format("Hey {0}, it's {1}.", whom, DateTime.Now);
-        }
-
-        internal void SendRoomPrivateMessage(string roomJid, string to, string message)
+    	internal void SendRoomPrivateMessage(string roomJid, string to, string message)
         {
             if (_room != null && _room.IsParticipating && _room.JID == roomJid)
                 _room.PrivateMessage(to, message);
@@ -161,7 +166,7 @@ namespace Temnenkov.SJB.Bot
                 SendRoomPrivateMessage(_room.JID, to, sb.ToString());
         }
 
-        void _client_OnError(object sender, Exception ex)
+    	static void ClientOnError(object sender, Exception ex)
         {
             if (ex is AuthenticationFailedException)
             {
@@ -172,24 +177,24 @@ namespace Temnenkov.SJB.Bot
             Environment.Exit(-1);
         }
 
-        void _client_OnRegistered(object sender, IQ iq)
+        void ClientOnRegistered(object sender, IQ iq)
         {
             Logger.Log(LogType.Info, "Logging in");
             _client.Login();
         }
 
-        bool _client_OnRegisterInfo(object sender, jabber.protocol.iq.Register register)
+    	static bool ClientOnRegisterInfo(object sender, jabber.protocol.iq.Register register)
         {
             return true;
         }
 
-        void _client_OnLoginRequired(object sender)
+        void ClientOnLoginRequired(object sender)
         {
             Logger.Log(LogType.Info, "Registering");
             _client.Register(new JID(Settings.JabberUser, Settings.JabberServer, null));
         }
 
-        bool _client_OnInvalidCertificate(object sender, System.Security.Cryptography.X509Certificates.X509Certificate certificate, System.Security.Cryptography.X509Certificates.X509Chain chain, System.Net.Security.SslPolicyErrors sslPolicyErrors)
+    	static bool ClientOnInvalidCertificate(object sender, System.Security.Cryptography.X509Certificates.X509Certificate certificate, System.Security.Cryptography.X509Certificates.X509Chain chain, System.Net.Security.SslPolicyErrors sslPolicyErrors)
         {
             Logger.Log(LogType.Info, "Invalid certificate");
             return true;
@@ -214,12 +219,8 @@ namespace Temnenkov.SJB.Bot
                 SetStatus("I'm online.");
                 return true;
             }
-            else
-            {
-                Logger.Log(LogType.Warn, "Fail auth");
-                return false;
-            }
-
+        	Logger.Log(LogType.Warn, "Fail auth");
+        	return false;
         }
 
         internal void Disconnect()
@@ -238,17 +239,16 @@ namespace Temnenkov.SJB.Bot
         {
             Logger.Log(LogType.Info, String.Format("Join in room {0}", jid));
 
-            JID rJid = new JID(jid);
             if (_room != null)
             {
-                _room.OnParticipantJoin -= new RoomParticipantEvent(_room_OnParticipantJoin);
-                _room.OnParticipantLeave -= new RoomParticipantEvent(_room_OnParticipantLeave);
-                _room.OnPrivateMessage -= new MessageHandler(_room_OnPrivateMessage);
-                _room.OnRoomMessage -= new MessageHandler(_room_OnRoomMessage);
-                _room.OnAdminMessage -= new MessageHandler(_room_OnAdminMessage);
-                _room.OnLeave -= new RoomPresenceHandler(_room_OnLeave);
-                _room.OnJoin -= new RoomEvent(_room_OnJoin);
-                _room.OnSubjectChange -= new MessageHandler(_room_OnSubjectChange);
+                _room.OnParticipantJoin -= RoomOnParticipantJoin;
+                _room.OnParticipantLeave -= RoomOnParticipantLeave;
+                _room.OnPrivateMessage -= RoomOnPrivateMessage;
+                _room.OnRoomMessage -= RoomOnRoomMessage;
+                _room.OnAdminMessage -= RoomOnAdminMessage;
+                _room.OnLeave -= RoomOnLeave;
+                _room.OnJoin -= RoomOnJoin;
+                _room.OnSubjectChange -= RoomOnSubjectChange;
             }
 
 
@@ -261,14 +261,14 @@ namespace Temnenkov.SJB.Bot
 
             var result = _room.IsParticipating;
 
-            _room.OnParticipantJoin += new RoomParticipantEvent(_room_OnParticipantJoin);
-            _room.OnParticipantLeave += new RoomParticipantEvent(_room_OnParticipantLeave);
-            _room.OnPrivateMessage += new MessageHandler(_room_OnPrivateMessage);
-            _room.OnRoomMessage += new MessageHandler(_room_OnRoomMessage);
-            _room.OnAdminMessage += new MessageHandler(_room_OnAdminMessage);
-            _room.OnLeave += new RoomPresenceHandler(_room_OnLeave);
-            _room.OnJoin += new RoomEvent(_room_OnJoin);
-            _room.OnSubjectChange += new MessageHandler(_room_OnSubjectChange);
+            _room.OnParticipantJoin += RoomOnParticipantJoin;
+            _room.OnParticipantLeave += RoomOnParticipantLeave;
+            _room.OnPrivateMessage += RoomOnPrivateMessage;
+            _room.OnRoomMessage += RoomOnRoomMessage;
+            _room.OnAdminMessage += RoomOnAdminMessage;
+            _room.OnLeave += RoomOnLeave;
+            _room.OnJoin += RoomOnJoin;
+            _room.OnSubjectChange += RoomOnSubjectChange;
 
             if (result)
             {
@@ -283,15 +283,18 @@ namespace Temnenkov.SJB.Bot
             return result;
         }
 
-        void _room_OnSubjectChange(object sender, Message msg)
+        void RoomOnSubjectChange(object sender, Message msg)
         {
             Logger.Log(LogType.Info, string.Format("{1} change subject {0}",
                 string.IsNullOrEmpty(msg.Subject) ? string.Empty : msg.Subject, 
                 msg.From.Resource));
 
             var room = sender as Room;
+			if (room == null) return;
 
+#pragma warning disable 618,612
             if (msg.X == null)
+#pragma warning restore 618,612
                 _translator.OnChangeSubject(new ChangeSubjectEventArgs(
                     room.JID.Bare, msg.From.Resource,
                     string.IsNullOrEmpty(msg.Subject) ? string.Empty : msg.Subject,
@@ -304,40 +307,40 @@ namespace Temnenkov.SJB.Bot
                     
         }
 
-        void _room_OnJoin(Room room)
+    	static void RoomOnJoin(Room room)
         {
             Logger.Log(LogType.Info, string.Format("join room {0}",
                 room.JID));
         }
 
-        void _room_OnLeave(Room room, Presence pres)
+        void RoomOnLeave(Room room, Presence pres)
         {
             Logger.Log(LogType.Info, string.Format("leave room {0} with presence {1}",
                 room.JID, pres));
             JoinRoom(string.Format("{0}/{1}", Settings.RoomJid, Settings.NameInRoom));
         }
 
-        void _room_OnAdminMessage(object sender, Message msg)
+    	static void RoomOnAdminMessage(object sender, Message msg)
         {
             Logger.Log(LogType.Info, string.Format("admin message {0}", msg.OuterXml));
         }
 
-        void _room_OnRoomMessage(object sender, Message msg)
+    	static void RoomOnRoomMessage(object sender, Message msg)
         {
             Logger.Log(LogType.Info, string.Format("room message {0}", msg.OuterXml));
         }
 
-        void _room_OnPrivateMessage(object sender, Message msg)
+    	static void RoomOnPrivateMessage(object sender, Message msg)
         {
             Logger.Log(LogType.Info, string.Format("private message {0}", msg.OuterXml));
         }
 
-        void _room_OnParticipantLeave(Room room, RoomParticipant participant)
+    	static void RoomOnParticipantLeave(Room room, RoomParticipant participant)
         {
             Logger.Log(LogType.Info, string.Format("leave {0}", participant.Nick));
         }
 
-        void _room_OnParticipantJoin(Room room, RoomParticipant participant)
+    	static void RoomOnParticipantJoin(Room room, RoomParticipant participant)
         {
             Logger.Log(LogType.Info, string.Format("join {0}", participant.Nick));
         }

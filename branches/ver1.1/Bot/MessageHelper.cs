@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using jabber.protocol.client;
 using jabber.connection;
 
@@ -10,7 +8,9 @@ namespace Temnenkov.SJB.Bot
     {
         internal static bool IsDelayed(Message msg)
         {
+#pragma warning disable 618,612
             return msg.X != null;
+#pragma warning restore 618,612
         }
 
         internal static bool IsEmpty(Message msg)
