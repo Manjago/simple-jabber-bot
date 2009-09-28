@@ -363,15 +363,13 @@ namespace Temnenkov.SJB.Bot
 }
 
 
-// toDO all events clean log
+// toDO dirty log clean log
 
 // toDO convert base - 1.hash 2. structure
 // todo base check const
 
 //toDo arch rebuild 
-//toDo help screen
 //todo localization
-//toDo join leave etc
 //toDo prevent doubling of delayed messages
 //toDo multiple channels
 //toDo not use msg.X
