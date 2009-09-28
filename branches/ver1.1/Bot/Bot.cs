@@ -307,16 +307,20 @@ namespace Temnenkov.SJB.Bot
                     
         }
 
-    	static void RoomOnJoin(Room room)
+    	private void RoomOnJoin(Room room)
         {
             Logger.Log(LogType.Info, string.Format("join room {0}",
                 room.JID));
+            _translator.OnRoomLeaveJoin(new RoomLeaveJoinEventArgs(
+                room.JID.Bare, Settings.NameInRoom, true, DateTime.Now));
         }
 
-        void RoomOnLeave(Room room, Presence pres)
+        private void RoomOnLeave(Room room, Presence pres)
         {
             Logger.Log(LogType.Info, string.Format("leave room {0} with presence {1}",
                 room.JID, pres));
+            _translator.OnRoomLeaveJoin(new RoomLeaveJoinEventArgs(
+                room.JID.Bare, Settings.NameInRoom, false, DateTime.Now));
             JoinRoom(string.Format("{0}/{1}", Settings.RoomJid, Settings.NameInRoom));
         }
 
