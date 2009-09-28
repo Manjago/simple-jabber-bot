@@ -17,6 +17,7 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
         protected LineTypeEnum LineType { get; private set; }
         protected DateTime Date { get; private set; }
         protected abstract string Hash {get;}
+        protected abstract string InternalDisplayString();
 
         private PersistentLine()
         {
@@ -35,6 +36,19 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
                 db.ExecuteCommand(Sql.Create);
         }
 
+        protected static string InAp(string arg)
+        {
+            return string.IsNullOrEmpty(arg) ? string.Empty : string.Format("'{0}'", arg);
+        }
+
+        public string DisplayString(bool withDate)
+        {
+            return string.Format("[{0}]{1}", withDate ?
+                string.Format("{0} {1}", Date.ToShortDateString(),
+                Date.ToShortTimeString()) :
+                Date.ToShortDateString(),
+                InternalDisplayString());
+        }
     }
 
     internal class ProtocolLine : PersistentLine
@@ -76,6 +90,15 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
             if (db != null && IsValid)
                 db.ExecuteCommand("INSERT INTO [Log] ([Jid], [From], [Message], [Date], [Hash], [Type]) VALUES (?, ?, ?, ?, ?, ?);",
                 Jid, From, Message, Date, Hash, (char)LineType);
+        }
+
+        protected override string InternalDisplayString()
+        {
+            return string.Format("{0}{1} {2}",
+                            LineType == LineTypeEnum.Delay ? "* " : string.Empty,
+                            InAp(From),
+                            Message
+                            );
         }
 
     }
@@ -120,6 +143,7 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
                 db.ExecuteCommand("INSERT INTO [Log] ([Jid], [From], [Message], [Date], [Hash], [Type]) VALUES (?, ?, ?, ?, ?, ?);",
                 Jid, Who, Subject, Date, Hash, (char)LineType);
         }
+
     }
 
     internal class ChangeSubjectDelayLine : ChangeSubjectLine
