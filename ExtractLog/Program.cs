@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using Temnenkov.SJB.Common;
@@ -11,13 +10,11 @@ namespace Temnenkov.SJB.ExtractLog
     {
         static void Main(string[] args)
         {
-            string jid;
-            if (args.Length < 1)
+        	if (args.Length < 1)
                 return;
-            else
-                jid = args[0];
+        	var jid = args[0];
 
-            int shift;
+        	int shift;
             if (args.Length < 2 || !Int32.TryParse(args[1], out shift))
                 shift = -1;
 
@@ -33,7 +30,7 @@ namespace Temnenkov.SJB.ExtractLog
             var secondDate = selectDate.Date.AddDays(1).AddMilliseconds(-1);
 
             var resFile = Path.Combine(Path.GetDirectoryName(Utils.GetExecutablePath()), "exp.log");
-            using (var sw = new System.IO.StreamWriter(resFile, false, Encoding.GetEncoding(1251)))
+            using (var sw = new StreamWriter(resFile, false, Encoding.GetEncoding(1251)))
             {
                 var sb = new MessageLogger(new DummyLogger(), dirName).GetLog(jid, firstDate, secondDate, false);
                 sw.Write(sb.ToString());

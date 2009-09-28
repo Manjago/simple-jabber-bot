@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Temnenkov.SJB.Common;
+﻿using Temnenkov.SJB.Common;
 using Temnenkov.SJB.ConfLogPlugin.Business;
 
 namespace Temnenkov.SJB.ConfLogPlugin
@@ -22,7 +19,7 @@ namespace Temnenkov.SJB.ConfLogPlugin
         public override void Init()
         {
             base.Init();
-            _db = new Temnenkov.SJB.Database.Database("ConfLog");
+            _db = new Database.Database("ConfLog");
             PersistentLine.Check(_db);
         }
 

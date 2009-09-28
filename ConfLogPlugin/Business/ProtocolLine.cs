@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Temnenkov.SJB.Database;
 using Temnenkov.SJB.Common;
 
 namespace Temnenkov.SJB.ConfLogPlugin.Business
@@ -14,7 +11,7 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
         DeleayTopicChange = 'S',
         SomebodyJoin = 'J',
         SomebodyLeave = 'L'
-    }
+	}
 
     internal abstract class PersistentLine : PersistentObject
     {

@@ -8,7 +8,7 @@ namespace Temnenkov.SJB.Bot
 {
     internal static class Logger
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(Bot));
+        private static readonly ILog Logg = LogManager.GetLogger(typeof(Bot));
 
         internal static void Log(LogType type, string message)
         {
@@ -20,19 +20,19 @@ namespace Temnenkov.SJB.Bot
             switch (type)
             {
                 case LogType.Debug:
-                    log.Debug(message, ex);
+                    Logg.Debug(message, ex);
                     break;
                 case LogType.Error:
-                    log.Error(message, ex);
+                    Logg.Error(message, ex);
                     break;
                 case LogType.Fatal:
-                    log.Fatal(message, ex);
+                    Logg.Fatal(message, ex);
                     break;
                 case LogType.Info:
-                    log.Info(message, ex);
+                    Logg.Info(message, ex);
                     break;
                 case LogType.Warn:
-                    log.Warn(message, ex);
+                    Logg.Warn(message, ex);
                     break;
             }
         }

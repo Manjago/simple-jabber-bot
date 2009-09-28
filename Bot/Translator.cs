@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Temnenkov.SJB.Common;
+﻿using Temnenkov.SJB.Common;
 
 namespace Temnenkov.SJB.Bot
 {
     public sealed class Translator : ITranslator
     {
-        private Bot _bot;
+        private readonly Bot _bot;
 
         private Translator()
         {

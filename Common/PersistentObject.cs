@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Temnenkov.SJB.Common
+﻿namespace Temnenkov.SJB.Common
 {
     public abstract class PersistentObject
     {
