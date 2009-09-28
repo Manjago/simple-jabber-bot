@@ -10,6 +10,7 @@ namespace Temnenkov.SJB.Common
         event NormalMessageHandler NormalMessage;
         event ChangeSubjectHandler ChangeSubject;
         event ChangeSubjectDelayHandler ChangeSubjectDelay;
+        event RoomLeaveJoinHandler RoomLeaveJoin;
         void SendRoomPublicMessage(string roomJid, string message);
         void SendRoomPrivateMessage(string roomJid, string to, string message);
         void SendNormalMessage(string to, string message);
@@ -99,4 +100,23 @@ namespace Temnenkov.SJB.Common
     }
 
     public delegate void ChangeSubjectDelayHandler(Object sender, ChangeSubjectDelayEventArgs e);
+
+    public class RoomLeaveJoinEventArgs : EventArgs
+    {
+        public string RoomJid { get; private set; }
+        public string Who { get; private set; }
+        public bool IsJoin { get; private set; }
+        public DateTime Date { get; private set; }
+        private RoomLeaveJoinEventArgs() { }
+        public RoomLeaveJoinEventArgs(string roomJid,
+            string who, bool isJoin, DateTime date)
+        {
+            RoomJid = roomJid;
+            Who = who;
+            IsJoin = isJoin;
+            Date = date;
+        }
+    }
+
+    public delegate void RoomLeaveJoinHandler(Object sender, RoomLeaveJoinEventArgs e);
 }

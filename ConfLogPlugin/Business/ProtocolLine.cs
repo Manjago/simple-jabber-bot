@@ -9,14 +9,14 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
         Delay = 'D',
         TopicChange = 'T',
         DeleayTopicChange = 'S',
-        SomebodyJoin = 'J',
-        SomebodyLeave = 'L'
+        SomebodyJoinLeave = 'J'
 	}
 
     internal abstract class PersistentLine : PersistentObject
     {
         protected LineTypeEnum LineType { get; private set; }
         protected DateTime Date { get; private set; }
+        protected abstract string Hash {get;}
 
         private PersistentLine()
         {
@@ -42,7 +42,7 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
         private string Jid { get; set; }
         private string From { get; set; }
         private string Message { get; set; }
-        private string Hash 
+        protected override string Hash 
         {
             get
             {
@@ -92,7 +92,7 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
         private string Jid { get; set; }
         private string Who { get; set; }
         private string Subject { get; set; }
-        private string Hash
+        protected override string Hash
         {
             get
             {
@@ -129,5 +129,41 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
 
     }
 
+    internal class LeaveJoinLine : PersistentLine
+    {
+        private string Jid { get; set; }
+        private string Who { get; set; }
+        private bool IsJoin { get; set; }
+        private string IsJoinAsStr 
+        {
+            get
+            {
+                return IsJoin ? "T" : "F";
+            }
+        } 
+        protected override string Hash
+        {
+            get
+            {
+                return Utils.GetMd5Hash(string.Format("{0}{1}{2}",
+                    Jid, Who, IsJoinAsStr));
+            }
+        }
+
+        internal LeaveJoinLine(string jid, string who, bool isJoin, DateTime date)
+            : base(LineTypeEnum.SomebodyJoinLeave, date)
+        {
+            Jid = jid;
+            Who = who;
+            IsJoin = isJoin;
+        }
+
+        public override void Save(IDatabase db)
+        {
+            if (db != null)
+                db.ExecuteCommand("INSERT INTO [Log] ([Jid], [From], [Message], [Date], [Hash], [Type]) VALUES (?, ?, ?, ?, ?, ?);",
+                Jid, Who, IsJoinAsStr, Date, Hash, (char)LineType);
+        }
+    }
 
 }
