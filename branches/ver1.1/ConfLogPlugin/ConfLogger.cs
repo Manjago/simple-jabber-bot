@@ -14,6 +14,12 @@ namespace Temnenkov.SJB.ConfLogPlugin
             Translator.RoomDelayPublicMessage += Translator_RoomDelayPublicMessage;
             Translator.ChangeSubject += Translator_ChangeSubject;
             Translator.ChangeSubjectDelay += Translator_ChangeSubjectDelay;
+            Translator.RoomLeaveJoin += Translator_RoomLeaveJoin;
+        }
+
+        private void Translator_RoomLeaveJoin(object sender, RoomLeaveJoinEventArgs e)
+        {
+            new LeaveJoinLine(e.RoomJid, e.Who, e.IsJoin, e.Date).Save(_db);
         }
 
         public override void Init()

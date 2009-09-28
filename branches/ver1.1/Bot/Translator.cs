@@ -50,6 +50,12 @@ namespace Temnenkov.SJB.Bot
             if (ChangeSubjectDelay != null)
                 ChangeSubjectDelay(this, e);
         }
+
+        internal void OnRoomLeaveJoin(RoomLeaveJoinEventArgs e)
+        {
+            if (RoomLeaveJoin != null)
+                RoomLeaveJoin(this, e);
+        }
         #region ITranslator Members
 
         public event RoomMessageHandler RoomPublicMessage;
@@ -58,6 +64,7 @@ namespace Temnenkov.SJB.Bot
         public event NormalMessageHandler NormalMessage;
         public event ChangeSubjectHandler ChangeSubject;
         public event ChangeSubjectDelayHandler ChangeSubjectDelay;
+        public event RoomLeaveJoinHandler RoomLeaveJoin;
 
         public void SendRoomPublicMessage(string roomJid, string message)
         {

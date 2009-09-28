@@ -335,14 +335,18 @@ namespace Temnenkov.SJB.Bot
             Logger.Log(LogType.Info, string.Format("private message {0}", msg.OuterXml));
         }
 
-    	static void RoomOnParticipantLeave(Room room, RoomParticipant participant)
+    	private void RoomOnParticipantLeave(Room room, RoomParticipant participant)
         {
             Logger.Log(LogType.Info, string.Format("leave {0}", participant.Nick));
+            _translator.OnRoomLeaveJoin(new RoomLeaveJoinEventArgs(
+                room.JID.Bare, participant.Nick, false, DateTime.Now));
         }
 
-    	static void RoomOnParticipantJoin(Room room, RoomParticipant participant)
+    	private void RoomOnParticipantJoin(Room room, RoomParticipant participant)
         {
             Logger.Log(LogType.Info, string.Format("join {0}", participant.Nick));
+            _translator.OnRoomLeaveJoin(new RoomLeaveJoinEventArgs(
+                room.JID.Bare, participant.Nick, true, DateTime.Now));
         }
 
         internal void SendRoomPublicMessage(string jid, string message)
@@ -353,6 +357,9 @@ namespace Temnenkov.SJB.Bot
 
     }
 }
+
+
+// toDO all events clean log
 
 // toDO convert base - 1.hash 2. structure
 // todo base check const
