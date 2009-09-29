@@ -144,7 +144,15 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
                 Jid, Who, Subject, Date, Hash, (char)LineType);
         }
 
-    }
+		protected override string InternalDisplayString()
+		{
+			return string.Format("{0}{1} изменил топик на {2}",
+							LineType == LineTypeEnum.Delay ? "* " : string.Empty,
+							InAp(Who),
+							InAp(Subject)
+							);
+		}
+	}
 
     internal class ChangeSubjectDelayLine : ChangeSubjectLine
     {
@@ -188,6 +196,15 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
                 db.ExecuteCommand("INSERT INTO [Log] ([Jid], [From], [Message], [Date], [Hash], [Type]) VALUES (?, ?, ?, ?, ?, ?);",
                 Jid, Who, IsJoinAsStr, Date, Hash, (char)LineType);
         }
+
+		protected override string InternalDisplayString()
+		{
+			if (IsJoin)
+				return string.Format("*** к нам пришел {0}",
+							InAp(Who));
+			return string.Format("*** от нас ушел {0}",
+			                     InAp(Who));
+		}
     }
 
 }
