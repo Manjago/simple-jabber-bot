@@ -76,5 +76,23 @@ namespace Temnenkov.SJB.ConfLogPlugin {
                 return ResourceManager.GetString("Create", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT [Date], [From], [Message], [IsDelay], [Hash], [Type] from [Log] WHERE [Date] BETWEEN ? AND ? AND [Jid] = ? ORDER BY [Id].
+        /// </summary>
+        internal static string Getlog {
+            get {
+                return ResourceManager.GetString("Getlog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to INSERT INTO [Log] ([Jid], [From], [Message], [Date], [Hash], [Type]) VALUES (?, ?, ?, ?, ?, ?);.
+        /// </summary>
+        internal static string Insert {
+            get {
+                return ResourceManager.GetString("Insert", resourceCulture);
+            }
+        }
     }
 }
