@@ -28,16 +28,35 @@ namespace Temnenkov.SJB.LogBase.Business
             _db = new Database.Database("ConfLog");
         }
 
+        private static LineTypeEnum FromString(string str)
+        {
+            switch (str)
+            {
+                case "N":
+                    return LineTypeEnum.Normal;
+                case "D":
+                    return LineTypeEnum.Delay;
+                case "T":
+                    return LineTypeEnum.TopicChange;
+                case "S":
+                    return LineTypeEnum.DeleayTopicChange;
+                case "J":
+                    return LineTypeEnum.SomebodyJoinLeave;
+                default:
+                    throw new ArgumentOutOfRangeException(string.Format("unknown type {0}", str));
+            }
+        }
+
         public void Check()
         {
             if (!_db.TableExists("Log"))
-                _db.ExecuteCommand(Sql.Create);
+                _db.ExecuteCommand(Base.Create);
         }
 
 
         private PersistentLine Create(IDataReader dr)
         {
-            var lineTypeEnum = (LineTypeEnum)dr.GetChar(CHAR_LINETYPEENUM);
+            var lineTypeEnum = FromString(dr.GetString(CHAR_LINETYPEENUM));
             switch (lineTypeEnum)
             {
                 case LineTypeEnum.Normal:
@@ -86,7 +105,7 @@ namespace Temnenkov.SJB.LogBase.Business
                     {
                         var line = pLine as ProtocolLine;
                         if (line.IsValid)
-                            _db.ExecuteCommand(Sql.Insert,
+                            _db.ExecuteCommand(Base.Insert,
                             line.Jid, line.From, line.Message, line.Date, line.Hash, (char)line.LineType);
                     }
                     break;
@@ -94,28 +113,28 @@ namespace Temnenkov.SJB.LogBase.Business
                     {
                         var line = pLine as ProtocolDelayLine;
                         if (line.IsValid)
-                            _db.ExecuteCommand(Sql.Insert,
+                            _db.ExecuteCommand(Base.Insert,
                             line.Jid, line.From, line.Message, line.Date, line.Hash, (char)line.LineType);
                     }
                     break;
                 case LineTypeEnum.TopicChange:
                     {
                         var line = pLine as ChangeSubjectLine;
-                        _db.ExecuteCommand(Sql.Insert,
+                        _db.ExecuteCommand(Base.Insert,
                             line.Jid, line.Who, line.Subject, line.Date, line.Hash, (char)line.LineType);
                     }
                     break;
                 case LineTypeEnum.DeleayTopicChange:
                     {
                         var line = pLine as ChangeSubjectDelayLine;
-                        _db.ExecuteCommand(Sql.Insert,
+                        _db.ExecuteCommand(Base.Insert,
                             line.Jid, line.Who, line.Subject, line.Date, line.Hash, (char)line.LineType);
                     }
                     break;
                 case LineTypeEnum.SomebodyJoinLeave:
                     {
                         var line = pLine as LeaveJoinLine;
-                            _db.ExecuteCommand(Sql.Insert,
+                        _db.ExecuteCommand(Base.Insert,
                             line.Jid, line.Who, line.IsJoinAsStr, line.Date, line.Hash, (char)line.LineType);
                     }
                     break;
@@ -127,10 +146,17 @@ namespace Temnenkov.SJB.LogBase.Business
 
         internal void Load(System.Collections.Generic.List<PersistentLine> list, string jid, DateTime perBeg, DateTime perEnd)
         {
-            using (var reader = _db.ExecuteReader(Sql.Getlog, perBeg, perEnd, jid))
+            try
             {
-                while (reader.Read())
-                    list.Add(Create(reader));
+                using (var reader = _db.ExecuteReader(Base.Getlog, perBeg, perEnd, jid))
+                {
+                    while (reader.Read())
+                        list.Add(Create(reader));
+                }
+            }
+            finally
+            {
+                _db.CloseReader();
             }
         }
     }
@@ -168,7 +194,7 @@ namespace Temnenkov.SJB.LogBase.Business
             return string.Format("[{0}]{1}", withDate ?
                 string.Format("{0} {1}", Date.ToShortDateString(),
                 Date.ToShortTimeString()) :
-                Date.ToShortDateString(),
+                Date.ToShortTimeString(),
                 InternalDisplayString());
         }
     }
@@ -211,7 +237,7 @@ namespace Temnenkov.SJB.LogBase.Business
         protected override string InternalDisplayString()
         {
             return string.Format("{0}{1} {2}",
-                            LineType == LineTypeEnum.Delay ? "* " : string.Empty,
+                            LineType == LineTypeEnum.Delay ? "* " : " ",
                             InAp(From),
                             Message
                             );
@@ -256,7 +282,7 @@ namespace Temnenkov.SJB.LogBase.Business
 		protected override string InternalDisplayString()
 		{
 			return string.Format("{0}{1} изменил топик на {2}",
-							LineType == LineTypeEnum.Delay ? "* " : string.Empty,
+							LineType == LineTypeEnum.DeleayTopicChange ? "* " : " ",
 							InAp(Who),
 							InAp(Subject)
 							);

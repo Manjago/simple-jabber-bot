@@ -25,7 +25,7 @@ namespace Temnenkov.SJB.LogBase.Business
         public string Export(bool withDate)
         {
             var sb = new StringBuilder();
-            for (int i = 0; i < Lines.Count - 1; ++i)
+            for (int i = 0; i < Lines.Count; ++i)
                 sb.AppendLine(Lines[i].DisplayString(withDate));
             return sb.ToString();
         }

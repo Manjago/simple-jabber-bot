@@ -6,10 +6,9 @@ using Temnenkov.SJB.Common;
 
 namespace Temnenkov.SJB.Database
 {
-    public class Database: IDatabase
+    public class Database : IDatabase
     {
         private readonly SQLiteConnection _connection;
-        private SQLiteTransaction _trans;
 
         public Database(string fileName)
             : this(Path.GetDirectoryName(Utils.GetExecutablePath()), fileName)
@@ -60,38 +59,26 @@ namespace Temnenkov.SJB.Database
 
         public int ExecuteCommand(string sql, params object[] parameters)
         {
-            if (IsTransactionActive)
-                return ExecuteCommand(_connection, _trans, sql, parameters);
-            else
+            _connection.Open();
+            try
             {
-                _connection.Open();
-                try
-                {
-                    return ExecuteCommand(_connection, null, sql, parameters);
-                }
-                finally
-                {
-                    _connection.Close();
-                }
+                return ExecuteCommand(_connection, null, sql, parameters);
+            }
+            finally
+            {
+                _connection.Close();
             }
         }
 
         public IDataReader ExecuteReader(string sql, params object[] parameters)
         {
-            if (IsTransactionActive)
-                return ExecuteReader(_connection, _trans, sql, parameters);
-            else
-            {
-                _connection.Open();
-                try
-                {
-                    return ExecuteReader(_connection, null, sql, parameters);
-                }
-                finally
-                {
-                    _connection.Close();
-                }
-            }
+            _connection.Open();
+                return ExecuteReader(_connection, null, sql, parameters);
+        }
+
+        public void CloseReader()
+        {
+            _connection.Close();
         }
 
         public bool TableExists(string tableName)
@@ -108,48 +95,6 @@ namespace Temnenkov.SJB.Database
             }
         }
 
-        public void BeginTransaction()
-        {
-            if (IsTransactionActive)
-                throw new SQLiteException("Transaction already active");
-
-            if (_connection.State != ConnectionState.Closed)
-                throw new SQLiteException("Connection already open");
-
-            _connection.Open();
-            _trans = _connection.BeginTransaction();
-        }
-
-        public void CommitTransaction()
-        {
-            if (!IsTransactionActive || _trans == null)
-                throw new SQLiteException("Transaction not active");
-
-            if (_connection.State == ConnectionState.Closed)
-                throw new SQLiteException("Connection already closed");
-
-            _trans.Commit();
-            _connection.Close();
-            _trans = null;            
-        }
-
-        public void RollbackTransaction()
-        {
-            if (!IsTransactionActive || _trans == null)
-                throw new SQLiteException("Transaction not active");
-
-            if (_connection.State == ConnectionState.Closed)
-                throw new SQLiteException("Connection already closed");
-
-            _trans.Rollback();
-            _connection.Close();
-            _trans = null;
-        }
-
-        public bool IsTransactionActive
-        {
-            get { return _trans != null; }
-        }
         #endregion
 
 

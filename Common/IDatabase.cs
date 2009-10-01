@@ -6,11 +6,8 @@ namespace Temnenkov.SJB.Common
     {
         int ExecuteCommand(string sql, params object[] parameters);
         IDataReader ExecuteReader(string sql, params object[] parameters);
+        void CloseReader();
         bool TableExists(string tanleName);
-        void BeginTransaction();
-        void CommitTransaction();
-        void RollbackTransaction();
-        bool IsTransactionActive {get;}
     }
 
 }

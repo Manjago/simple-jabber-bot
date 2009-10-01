@@ -43,7 +43,7 @@ namespace Temnenkov.SJB.PingerPlugin
             return Protocol.Load(new PersistentLineDataLayer(), 
                 jid,
                 DateTime.Now.AddDays(-1),
-                DateTime.Now.AddDays(1)).Export(false); 
+                DateTime.Now.AddDays(1)).Export(true); 
         }
 
         private static bool IsCommand(string message, string cmd)
