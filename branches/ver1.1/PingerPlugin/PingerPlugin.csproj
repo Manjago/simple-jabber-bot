@@ -44,6 +44,10 @@
       <Project>{75F1F983-6D1E-4A7A-A375-75A1A30C8498}</Project>
       <Name>Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LogBase\LogBase.csproj">
+      <Project>{C6AEAB0D-618B-43A7-9D0A-669F16B8AFD1}</Project>
+      <Name>LogBase</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

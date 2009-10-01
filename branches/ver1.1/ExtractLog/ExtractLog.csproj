@@ -44,13 +44,13 @@
       <Project>{75F1F983-6D1E-4A7A-A375-75A1A30C8498}</Project>
       <Name>Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ConfLog\ConfLog.csproj">
-      <Project>{830841A3-08FC-49D4-AF11-07914A440E33}</Project>
-      <Name>ConfLog</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Database\Database.csproj">
       <Project>{9B54F57D-66B6-4924-B088-29C26990734F}</Project>
       <Name>Database</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LogBase\LogBase.csproj">
+      <Project>{C6AEAB0D-618B-43A7-9D0A-669F16B8AFD1}</Project>
+      <Name>LogBase</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

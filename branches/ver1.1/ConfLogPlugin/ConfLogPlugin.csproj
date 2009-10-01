@@ -36,36 +36,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Business\Protocol.cs" />
-    <Compile Include="Business\ProtocolLine.cs" />
     <Compile Include="ConfLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sql.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Sql.resx</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{75F1F983-6D1E-4A7A-A375-75A1A30C8498}</Project>
       <Name>Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Database\Database.csproj">
-      <Project>{9B54F57D-66B6-4924-B088-29C26990734F}</Project>
-      <Name>Database</Name>
+    <ProjectReference Include="..\LogBase\LogBase.csproj">
+      <Project>{C6AEAB0D-618B-43A7-9D0A-669F16B8AFD1}</Project>
+      <Name>LogBase</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Sql.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Sql.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="create.sql" />
-    <None Include="getlog.sql" />
-    <None Include="insert.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
