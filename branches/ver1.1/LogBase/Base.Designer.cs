@@ -22,14 +22,14 @@ namespace Temnenkov.SJB.LogBase {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "2.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Sql {
+    internal class Base {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Sql() {
+        internal Base() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Temnenkov.SJB.LogBase {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Temnenkov.SJB.ConfLogPlugin.Sql", typeof(Sql).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Temnenkov.SJB.LogBase.Base", typeof(Base).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -78,7 +78,7 @@ namespace Temnenkov.SJB.LogBase {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT [Date], [From], [Message], [IsDelay], [Hash], [Type] from [Log] WHERE [Date] BETWEEN ? AND ? AND [Jid] = ? ORDER BY [Id].
+        ///   Looks up a localized string similar to SELECT [Date], [From], [Message], [Type], [Jid] from [Log] WHERE [Date] BETWEEN ? AND ? AND [Jid] = ? ORDER BY [Id].
         /// </summary>
         internal static string Getlog {
             get {

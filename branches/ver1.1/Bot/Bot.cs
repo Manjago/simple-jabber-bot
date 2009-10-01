@@ -268,12 +268,12 @@ namespace Temnenkov.SJB.Bot
             if (msg.X == null)
 #pragma warning restore 618,612
                 _translator.OnChangeSubject(new ChangeSubjectEventArgs(
-                    room.JID.Bare, msg.From.Resource,
+                    room.JID.Bare, msg.From.User,
                     string.IsNullOrEmpty(msg.Subject) ? string.Empty : msg.Subject,
                     DateTime.Now));
             else
                 _translator.OnChangeSubjectDelay(new ChangeSubjectDelayEventArgs(
-                    room.JID.Bare, msg.From.Resource,
+                    room.JID.Bare, msg.From.User,
                     string.IsNullOrEmpty(msg.Subject) ? string.Empty : msg.Subject,
                     DateTime.Now, DateTime.Now));
                     
