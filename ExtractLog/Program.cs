@@ -2,7 +2,7 @@
 using System.Text;
 using System.IO;
 using Temnenkov.SJB.Common;
-using Temnenkov.SJB.ConfLog;
+using Temnenkov.SJB.LogBase.Business;
 
 namespace Temnenkov.SJB.ExtractLog
 {
@@ -31,10 +31,8 @@ namespace Temnenkov.SJB.ExtractLog
 
             var resFile = Path.Combine(Path.GetDirectoryName(Utils.GetExecutablePath()), "exp.log");
             using (var sw = new StreamWriter(resFile, false, Encoding.GetEncoding(1251)))
-            {
-                var sb = new MessageLogger(new DummyLogger(), dirName).GetLog(jid, firstDate, secondDate, false);
-                sw.Write(sb.ToString());
-            }
+                sw.Write(Protocol.Load(new PersistentLineDataLayer(),
+                    jid, firstDate, secondDate).Export(false));
         }
 
         internal class DummyLogger : ILogger

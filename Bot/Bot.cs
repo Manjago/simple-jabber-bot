@@ -6,7 +6,6 @@ using jabber;
 using jabber.connection.sasl;
 using jabber.connection;
 using Temnenkov.SJB.Common;
-using Temnenkov.SJB.ConfLog;
 using Temnenkov.SJB.PingerPlugin;
 using Temnenkov.SJB.ConfLogPlugin;
 
@@ -16,7 +15,6 @@ namespace Temnenkov.SJB.Bot
     {
         private readonly JabberClient _client;
         private readonly ConferenceManager _conferenceManager;
-        private readonly MessageLogger _messageLogger;
         private Room _room;
         private readonly RosterManager _rosterManager;
         private readonly Translator _translator;
@@ -50,7 +48,6 @@ namespace Temnenkov.SJB.Bot
         	                 		AutoSubscribe = true
         	                 	};
 
-        	_messageLogger = new MessageLogger(new LogWrapper());
 
             _translator = new Translator(this);
 
@@ -93,15 +90,7 @@ namespace Temnenkov.SJB.Bot
                         msg.Body ?? string.Empty,
                         timeStamp, Settings.NameInRoom, timeStamp /*временно*/));
                     Logger.Log(LogType.Info, String.Format("Groupchat message received from resource {0} in room {1}: {2}", msg.From.Resource, msg.From.Bare, msg.Body));
-#pragma warning disable 618,612
-                    _messageLogger.LogMessage(msg.From.Bare ?? string.Empty, msg.From.Resource ?? string.Empty, msg.Body ?? string.Empty, msg.X != null);
-#pragma warning restore 618,612
 
-                    if (MessageHelper.IsLogCommand(msg))
-                    {
-                        Logger.Log(LogType.Info, String.Format("Send log to {0}", msg.From.User));
-                        SendLog(msg.From.Bare, msg.From.Resource);
-                    }
 
                     break;
                 case MessageType.chat:
@@ -123,12 +112,6 @@ namespace Temnenkov.SJB.Bot
 
                         Logger.Log(LogType.Info, String.Format("room {3} chat message resource {0} bare {1} body {2}", msg.From.Resource, msg.From.Bare, msg.Body, isRoomMesage));
 
-                        if (MessageHelper.IsLogCommand(msg))
-                        {
-                            Logger.Log(LogType.Info, String.Format("Send log to {0}", msg.From.User));
-                            if (isRoomMesage) // логи только через приватное сообщение из комнаты
-                                SendLog(msg.From.Bare, msg.From.Resource);
-                        }
                     }
 
                     break;
@@ -153,17 +136,6 @@ namespace Temnenkov.SJB.Bot
         internal void SendMessage(string to, string message)
         {
             _client.Message(to, message);
-        }
-
-        private void SendLog(string jid, string to)
-        {
-            var selectDate = DateTime.Now.AddDays(-1);
-            var firstDate = selectDate.Date;
-            var secondDate = DateTime.Now.AddDays(1);
-
-            var sb = new MessageLogger(new LogWrapper()).GetLog(jid, firstDate, secondDate, true);
-            if (sb.Length != 0)
-                SendRoomPrivateMessage(_room.JID, to, sb.ToString());
         }
 
     	static void ClientOnError(object sender, Exception ex)

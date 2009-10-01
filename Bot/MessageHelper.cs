@@ -24,11 +24,6 @@ namespace Temnenkov.SJB.Bot
                 msg.Body.Equals(cmd, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        internal static bool IsLogCommand(Message msg)
-        {
-            return IsCommang(msg, "log");
-        }
-
         internal static bool IsFromRoomMessage(Message msg, Room room)
         {
             return msg.From.Bare != null &&

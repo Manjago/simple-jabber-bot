@@ -1,5 +1,5 @@
 ﻿using Temnenkov.SJB.Common;
-using Temnenkov.SJB.ConfLogPlugin.Business;
+using Temnenkov.SJB.LogBase.Business;
 
 namespace Temnenkov.SJB.ConfLogPlugin
 {
@@ -25,7 +25,7 @@ namespace Temnenkov.SJB.ConfLogPlugin
         public override void Init()
         {
             base.Init();
-            _dal = new PersistentLineDataLayer("ConfLog");
+            _dal = new PersistentLineDataLayer();
             _dal.Check();
         }
 

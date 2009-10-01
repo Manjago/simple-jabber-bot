@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Temnenkov.SJB.ConfLogPlugin {
+namespace Temnenkov.SJB.LogBase {
     using System;
     
     
