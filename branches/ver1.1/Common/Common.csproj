@@ -38,7 +38,6 @@
   <ItemGroup>
     <Compile Include="IDatabase.cs" />
     <Compile Include="ILogger.cs" />
-    <Compile Include="PersistentObject.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="ITranslator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

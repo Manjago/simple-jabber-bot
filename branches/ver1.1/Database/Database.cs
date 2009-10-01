@@ -9,6 +9,7 @@ namespace Temnenkov.SJB.Database
     public class Database: IDatabase
     {
         private readonly SQLiteConnection _connection;
+        private SQLiteTransaction _trans;
 
         public Database(string fileName)
             : this(Path.GetDirectoryName(Utils.GetExecutablePath()), fileName)
@@ -39,40 +40,57 @@ namespace Temnenkov.SJB.Database
             return null;
         }
 
+        private int ExecuteCommand(SQLiteConnection conn, SQLiteTransaction trans, string sql, params object[] parameters)
+        {
+            var command = new SQLiteCommand(sql, conn, trans);
+            foreach (var p in parameters)
+                command.Parameters.Add(GetParameter(p));
+            return command.ExecuteNonQuery();
+        }
 
+        private SQLiteDataReader ExecuteReader(SQLiteConnection conn, SQLiteTransaction trans, string sql, params object[] parameters)
+        {
+            var command = new SQLiteCommand(sql, _connection);
+            foreach (var p in parameters)
+                command.Parameters.Add(GetParameter(p));
+            return command.ExecuteReader();
+        }
 
         #region IDatabase Members
 
         public int ExecuteCommand(string sql, params object[] parameters)
         {
-            _connection.Open();
-            try
+            if (IsTransactionActive)
+                return ExecuteCommand(_connection, _trans, sql, parameters);
+            else
             {
-                var command = new SQLiteCommand(sql, _connection);
-                foreach (var p in parameters)
-                    command.Parameters.Add(GetParameter(p));
-                return command.ExecuteNonQuery();
+                _connection.Open();
+                try
+                {
+                    return ExecuteCommand(_connection, null, sql, parameters);
+                }
+                finally
+                {
+                    _connection.Close();
+                }
             }
-            finally
-            {
-                _connection.Close();
-            }
-
         }
 
         public IDataReader ExecuteReader(string sql, params object[] parameters)
         {
-            _connection.Open();
-            try
+            if (IsTransactionActive)
+                return ExecuteReader(_connection, _trans, sql, parameters);
+            else
             {
-                var command = new SQLiteCommand(sql, _connection);
-                foreach (var p in parameters)
-                    command.Parameters.Add(GetParameter(p));
-                return command.ExecuteReader();
-            }
-            finally
-            {
-                _connection.Close();
+                _connection.Open();
+                try
+                {
+                    return ExecuteReader(_connection, null, sql, parameters);
+                }
+                finally
+                {
+                    _connection.Close();
+                }
             }
         }
 
@@ -90,6 +108,50 @@ namespace Temnenkov.SJB.Database
             }
         }
 
+        public void BeginTransaction()
+        {
+            if (IsTransactionActive)
+                throw new SQLiteException("Transaction already active");
+
+            if (_connection.State != ConnectionState.Closed)
+                throw new SQLiteException("Connection already open");
+
+            _connection.Open();
+            _trans = _connection.BeginTransaction();
+        }
+
+        public void CommitTransaction()
+        {
+            if (!IsTransactionActive || _trans == null)
+                throw new SQLiteException("Transaction not active");
+
+            if (_connection.State == ConnectionState.Closed)
+                throw new SQLiteException("Connection already closed");
+
+            _trans.Commit();
+            _connection.Close();
+            _trans = null;            
+        }
+
+        public void RollbackTransaction()
+        {
+            if (!IsTransactionActive || _trans == null)
+                throw new SQLiteException("Transaction not active");
+
+            if (_connection.State == ConnectionState.Closed)
+                throw new SQLiteException("Connection already closed");
+
+            _trans.Rollback();
+            _connection.Close();
+            _trans = null;
+        }
+
+        public bool IsTransactionActive
+        {
+            get { return _trans != null; }
+        }
         #endregion
+
+
     }
 }

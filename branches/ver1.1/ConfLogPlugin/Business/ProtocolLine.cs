@@ -1,5 +1,6 @@
 ﻿using System;
 using Temnenkov.SJB.Common;
+using System.Data;
 
 namespace Temnenkov.SJB.ConfLogPlugin.Business
 {
@@ -12,11 +13,137 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
         SomebodyJoinLeave = 'J'
 	}
 
-    internal abstract class PersistentLine : PersistentObject
+    internal class PersistentLineDataLayer
     {
-        protected LineTypeEnum LineType { get; private set; }
-        protected DateTime Date { get; private set; }
-        protected abstract string Hash {get;}
+        private const int DATE_DATE = 0;
+        private const int STRING_FROM = 1;
+        private const int STRING_MESSAGE = 2;
+        private const int CHAR_LINETYPEENUM = 3;
+        private const int STRING_JID = 4;
+
+        internal IDatabase _db;
+
+        private PersistentLineDataLayer()
+        {
+        }
+
+        internal PersistentLineDataLayer(string name)
+        {
+            _db = new Database.Database("ConfLog");
+        }
+
+        internal void Check()
+        {
+            if (!_db.TableExists("Log"))
+                _db.ExecuteCommand(Sql.Create);
+        }
+
+
+        internal PersistentLine Create(IDataReader dr)
+        {
+            var lineTypeEnum = (LineTypeEnum)dr.GetChar(CHAR_LINETYPEENUM);
+            switch (lineTypeEnum)
+            {
+                case LineTypeEnum.Normal:
+                    return new ProtocolLine(
+                        dr.GetString(STRING_JID),
+                        dr.GetString(STRING_FROM),
+                        dr.GetString(STRING_MESSAGE),
+                        dr.GetDateTime(DATE_DATE));
+                case LineTypeEnum.Delay:
+                    return new ProtocolDelayLine(
+                        dr.GetString(STRING_JID),
+                        dr.GetString(STRING_FROM),
+                        dr.GetString(STRING_MESSAGE),
+                        dr.GetDateTime(DATE_DATE));
+                case LineTypeEnum.TopicChange:
+                    return new ChangeSubjectLine(
+                        dr.GetString(STRING_JID),
+                        dr.GetString(STRING_FROM),
+                        dr.GetString(STRING_MESSAGE),
+                        dr.GetDateTime(DATE_DATE));
+                case LineTypeEnum.DeleayTopicChange:
+                    return new ChangeSubjectDelayLine(
+                        dr.GetString(STRING_JID),
+                        dr.GetString(STRING_FROM),
+                        dr.GetString(STRING_MESSAGE),
+                        dr.GetDateTime(DATE_DATE));
+                case LineTypeEnum.SomebodyJoinLeave:
+                    return new LeaveJoinLine(
+                        dr.GetString(STRING_JID),
+                        dr.GetString(STRING_FROM),
+                        dr.GetString(STRING_MESSAGE) != "F",
+                        dr.GetDateTime(DATE_DATE));
+                default:
+                    throw new ArgumentOutOfRangeException(string.Format("bad arg {0}", lineTypeEnum));
+            }
+        }
+
+        internal void Save(PersistentLine pLine)
+        {
+            if (_db == null || pLine == null) return;
+
+            var lineTypeEnum = pLine.LineType;
+            switch (lineTypeEnum)
+            {
+                case LineTypeEnum.Normal:
+                    {
+                        var line = pLine as ProtocolLine;
+                        if (line.IsValid)
+                            _db.ExecuteCommand(Sql.Insert,
+                            line.Jid, line.From, line.Message, line.Date, line.Hash, (char)line.LineType);
+                    }
+                    break;
+                case LineTypeEnum.Delay:
+                    {
+                        var line = pLine as ProtocolDelayLine;
+                        if (line.IsValid)
+                            _db.ExecuteCommand(Sql.Insert,
+                            line.Jid, line.From, line.Message, line.Date, line.Hash, (char)line.LineType);
+                    }
+                    break;
+                case LineTypeEnum.TopicChange:
+                    {
+                        var line = pLine as ChangeSubjectLine;
+                        _db.ExecuteCommand(Sql.Insert,
+                            line.Jid, line.Who, line.Subject, line.Date, line.Hash, (char)line.LineType);
+                    }
+                    break;
+                case LineTypeEnum.DeleayTopicChange:
+                    {
+                        var line = pLine as ChangeSubjectDelayLine;
+                        _db.ExecuteCommand(Sql.Insert,
+                            line.Jid, line.Who, line.Subject, line.Date, line.Hash, (char)line.LineType);
+                    }
+                    break;
+                case LineTypeEnum.SomebodyJoinLeave:
+                    {
+                        var line = pLine as LeaveJoinLine;
+                            _db.ExecuteCommand(Sql.Insert,
+                            line.Jid, line.Who, line.IsJoinAsStr, line.Date, line.Hash, (char)line.LineType);
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(string.Format("bad arg {0}", lineTypeEnum));
+            }
+
+        }
+
+        internal void Load(System.Collections.Generic.List<PersistentLine> list, string jid, DateTime perBeg, DateTime perEnd)
+        {
+            using (var reader = _db.ExecuteReader(Sql.Getlog, perBeg, perEnd, jid))
+            {
+                while (reader.Read())
+                    list.Add(Create(reader));
+            }
+        }
+    }
+
+    internal abstract class PersistentLine 
+    {
+        internal LineTypeEnum LineType { get; private set; }
+        internal DateTime Date { get; private set; }
+        internal abstract string Hash {get;}
         protected abstract string InternalDisplayString();
 
         private PersistentLine()
@@ -30,10 +157,9 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
             Date = date;
         }
 
-        public static void Check(IDatabase db)
+        public void Save(PersistentLineDataLayer dal)
         {
-            if (!db.TableExists("Log"))
-                db.ExecuteCommand(Sql.Create);
+            dal.Save(this);
         }
 
         protected static string InAp(string arg)
@@ -53,10 +179,10 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
 
     internal class ProtocolLine : PersistentLine
     {
-        private string Jid { get; set; }
-        private string From { get; set; }
-        private string Message { get; set; }
-        protected override string Hash 
+        internal string Jid { get; private set; }
+        internal string From { get; private set; }
+        internal string Message { get; private set; }
+        internal override string Hash 
         {
             get
             {
@@ -64,7 +190,8 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
                     Jid, From, Message));
             }
         }
-        private bool IsValid
+
+        internal bool IsValid
         {
             get
             {
@@ -83,13 +210,6 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
             Jid = jid;
             From = from;
             Message = message;
-        }
-
-        public override void Save(IDatabase db)
-        {
-            if (db != null && IsValid)
-                db.ExecuteCommand("INSERT INTO [Log] ([Jid], [From], [Message], [Date], [Hash], [Type]) VALUES (?, ?, ?, ?, ?, ?);",
-                Jid, From, Message, Date, Hash, (char)LineType);
         }
 
         protected override string InternalDisplayString()
@@ -112,10 +232,10 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
 
     internal class ChangeSubjectLine : PersistentLine
     {
-        private string Jid { get; set; }
-        private string Who { get; set; }
-        private string Subject { get; set; }
-        protected override string Hash
+        internal string Jid { get; private set; }
+        internal string Who { get; private set; }
+        internal string Subject { get; private set; }
+        internal override string Hash
         {
             get
             {
@@ -137,13 +257,6 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
             Subject = subject;
         }
 
-        public override void Save(IDatabase db)
-        {
-            if (db != null)
-                db.ExecuteCommand("INSERT INTO [Log] ([Jid], [From], [Message], [Date], [Hash], [Type]) VALUES (?, ?, ?, ?, ?, ?);",
-                Jid, Who, Subject, Date, Hash, (char)LineType);
-        }
-
 		protected override string InternalDisplayString()
 		{
 			return string.Format("{0}{1} изменил топик на {2}",
@@ -163,17 +276,17 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
 
     internal class LeaveJoinLine : PersistentLine
     {
-        private string Jid { get; set; }
-        private string Who { get; set; }
-        private bool IsJoin { get; set; }
-        private string IsJoinAsStr 
+        internal string Jid { get; private set; }
+        internal string Who { get; private set; }
+        internal bool IsJoin { get; private set; }
+        internal string IsJoinAsStr 
         {
             get
             {
                 return IsJoin ? "T" : "F";
             }
         } 
-        protected override string Hash
+        internal override string Hash
         {
             get
             {
@@ -188,13 +301,6 @@ namespace Temnenkov.SJB.ConfLogPlugin.Business
             Jid = jid;
             Who = who;
             IsJoin = isJoin;
-        }
-
-        public override void Save(IDatabase db)
-        {
-            if (db != null)
-                db.ExecuteCommand("INSERT INTO [Log] ([Jid], [From], [Message], [Date], [Hash], [Type]) VALUES (?, ?, ?, ?, ?, ?);",
-                Jid, Who, IsJoinAsStr, Date, Hash, (char)LineType);
         }
 
 		protected override string InternalDisplayString()
