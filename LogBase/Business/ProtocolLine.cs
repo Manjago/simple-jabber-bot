@@ -181,6 +181,11 @@ namespace Temnenkov.SJB.LogBase.Business
                 db.CommitTransaction();
             }            
         }
+
+        internal System.Collections.Generic.List<Chain> GetSameLines(PersistentLine persistentLine)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public abstract class PersistentLine
@@ -200,6 +205,14 @@ namespace Temnenkov.SJB.LogBase.Business
         {
             LineType = lineType;
             Date = date;
+        }
+
+        public bool IsDelayed
+        {
+            get
+            {
+                return (LineType == LineTypeEnum.Delay || LineType == LineTypeEnum.DeleayTopicChange);
+            }
         }
 
         public void Save(PersistentLineDataLayer dal)

@@ -41,6 +41,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Base.resx</DependentUpon>
     </Compile>
+    <Compile Include="Business\Chain.cs" />
     <Compile Include="Business\Protocol.cs" />
     <Compile Include="Business\ProtocolLine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
