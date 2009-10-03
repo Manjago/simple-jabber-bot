@@ -36,5 +36,24 @@ namespace Temnenkov.SJB.LogBase.Business
             return sb.ToString();
         }
 
+        public Protocol Smooth()
+        {
+            // перегоним весть контент в цепочки
+            var chains = Chain.ToChains(Lines);
+            for (int i = 0; i < chains.Count; ++i)
+            {
+                if (chains[i].IsBad)
+                {
+                    chains.RemoveAt(i);
+                    --i;
+                }
+            }
+            Lines.Clear();
+            foreach (var chain in chains)
+                Lines.AddRange(chain.Lines());
+
+            return this;
+        }
+
     }
 }
