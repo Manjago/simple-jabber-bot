@@ -21,11 +21,28 @@ namespace Temnenkov.SJB.LogBase.Business
         private const int CHAR_LINETYPEENUM = 3;
         private const int STRING_JID = 4;
 
-        internal IDatabase _db;
+        private readonly string _dbname;
 
-        public PersistentLineDataLayer()
+        public PersistentLineDataLayer() : this("ConfLog")
         {
-            _db = new Database.Database("ConfLog");
+        }
+
+        public PersistentLineDataLayer(string dbname)
+        {
+            _dbname = dbname;
+        }
+
+        private Database.Database CreateDatabase()
+        {
+             Database.Database result = new Database.Database(_dbname);
+             Check(result);
+             return result;
+        }
+
+        private void Check(IDatabase db)
+        {
+            if (!db.TableExists("Log"))
+                db.ExecuteCommand(Base.Create);
         }
 
         private static LineTypeEnum FromString(string str)
@@ -46,13 +63,6 @@ namespace Temnenkov.SJB.LogBase.Business
                     throw new ArgumentOutOfRangeException(string.Format("unknown type {0}", str));
             }
         }
-
-        public void Check()
-        {
-            if (!_db.TableExists("Log"))
-                _db.ExecuteCommand(Base.Create);
-        }
-
 
         private PersistentLine Create(IDataReader dr)
         {
@@ -94,9 +104,9 @@ namespace Temnenkov.SJB.LogBase.Business
             }
         }
 
-        internal void Save(PersistentLine pLine)
+        internal void Save(PersistentLine pLine, IDatabase db)
         {
-            if (_db == null || pLine == null || !pLine.IsValid) return;
+            if (pLine == null || !pLine.IsValid) return;
 
             var lineTypeEnum = pLine.LineType;
             switch (lineTypeEnum)
@@ -104,58 +114,72 @@ namespace Temnenkov.SJB.LogBase.Business
                 case LineTypeEnum.Normal:
                     {
                         var line = pLine as ProtocolLine;
-                        _db.ExecuteCommand(Base.Insert,
+                        db.ExecuteCommand(Base.Insert,
                         line.Jid, line.From, line.Message, line.Date, line.Hash, (char)line.LineType);
                     }
                     break;
                 case LineTypeEnum.Delay:
                     {
                         var line = pLine as ProtocolDelayLine;
-                        _db.ExecuteCommand(Base.Insert,
+                        db.ExecuteCommand(Base.Insert,
                         line.Jid, line.From, line.Message, line.Date, line.Hash, (char)line.LineType);
                     }
                     break;
                 case LineTypeEnum.TopicChange:
                     {
                         var line = pLine as ChangeSubjectLine;
-                        _db.ExecuteCommand(Base.Insert,
+                        db.ExecuteCommand(Base.Insert,
                             line.Jid, line.Who, line.Subject, line.Date, line.Hash, (char)line.LineType);
                     }
                     break;
                 case LineTypeEnum.DeleayTopicChange:
                     {
                         var line = pLine as ChangeSubjectDelayLine;
-                        _db.ExecuteCommand(Base.Insert,
+                        db.ExecuteCommand(Base.Insert,
                             line.Jid, line.Who, line.Subject, line.Date, line.Hash, (char)line.LineType);
                     }
                     break;
                 case LineTypeEnum.SomebodyJoinLeave:
                     {
                         var line = pLine as LeaveJoinLine;
-                        _db.ExecuteCommand(Base.Insert,
+                        db.ExecuteCommand(Base.Insert,
                             line.Jid, line.Who, line.IsJoinAsStr, line.Date, line.Hash, (char)line.LineType);
                     }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(string.Format("bad arg {0}", lineTypeEnum));
             }
+        }
 
+        internal void Save(PersistentLine pLine)
+        {
+            using (var db = CreateDatabase())
+            {
+                Save(pLine, db);
+            }
         }
 
         internal void Load(System.Collections.Generic.List<PersistentLine> list, string jid, DateTime perBeg, DateTime perEnd)
         {
-            try
+            using (var db = CreateDatabase())
             {
-                using (var reader = _db.ExecuteReader(Base.Getlog, perBeg, perEnd, jid))
+                using (var reader = db.ExecuteReader(Base.Getlog, perBeg, perEnd, jid))
                 {
                     while (reader.Read())
                         list.Add(Create(reader));
                 }
             }
-            finally
+        }
+
+        internal void Save(System.Collections.Generic.List<PersistentLine> Lines)
+        {
+            using (var db = CreateDatabase())
             {
-                _db.CloseReader();
-            }
+                db.BeginTransaction();
+                foreach (var item in Lines)
+                    item.Save(this, db);
+                db.CommitTransaction();
+            }            
         }
     }
 
@@ -181,6 +205,11 @@ namespace Temnenkov.SJB.LogBase.Business
         public void Save(PersistentLineDataLayer dal)
         {
             dal.Save(this);
+        }
+
+        public void Save(PersistentLineDataLayer dal, IDatabase db)
+        {
+            dal.Save(this, db);
         }
 
         protected static string InAp(string arg)
@@ -280,7 +309,7 @@ namespace Temnenkov.SJB.LogBase.Business
 
         internal override bool IsValid
         {
-            get 
+            get
             {
                 return !(string.IsNullOrEmpty(Jid) || string.IsNullOrEmpty(Who) || Subject == null);
             }

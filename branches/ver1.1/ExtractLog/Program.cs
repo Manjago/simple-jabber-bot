@@ -25,14 +25,26 @@ namespace Temnenkov.SJB.ExtractLog
             else
                 dirName = args[2];
 
-            var selectDate = DateTime.Now.AddDays(shift);
-            var firstDate = selectDate.Date;
-            var secondDate = selectDate.Date.AddDays(1).AddMilliseconds(-1);
+            if (shift > 0)
+            {
+                var resFile = Path.Combine(Path.GetDirectoryName(Utils.GetExecutablePath()), "copy.sqlite");
+                if (File.Exists(resFile)) File.Delete(resFile);
+                Protocol.Load(new PersistentLineDataLayer(),
+                        jid, new DateTime(1990, 1, 1), new DateTime(2990, 1, 1)).Save("copy");
 
-            var resFile = Path.Combine(Path.GetDirectoryName(Utils.GetExecutablePath()), "exp.log");
-            using (var sw = new StreamWriter(resFile, false, Encoding.GetEncoding(1251)))
-                sw.Write(Protocol.Load(new PersistentLineDataLayer(),
-                    jid, firstDate, secondDate).Export(false));
+            }
+            else
+            {
+                var selectDate = DateTime.Now.AddDays(shift);
+                var firstDate = selectDate.Date;
+                var secondDate = selectDate.Date.AddDays(1).AddMilliseconds(-1);
+
+                var resFile = Path.Combine(Path.GetDirectoryName(Utils.GetExecutablePath()), "exp.log");
+                using (var sw = new StreamWriter(resFile, false, Encoding.GetEncoding(1251)))
+                    sw.Write(Protocol.Load(new PersistentLineDataLayer(),
+                        jid, firstDate, secondDate).Export(false));
+            }
+
         }
 
         internal class DummyLogger : ILogger
