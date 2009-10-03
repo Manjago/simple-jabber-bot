@@ -11,7 +11,7 @@ namespace Temnenkov.SJB.LogBase.Business
         TopicChange = 'T',
         DeleayTopicChange = 'S',
         SomebodyJoinLeave = 'J'
-	}
+    }
 
     public class PersistentLineDataLayer
     {
@@ -96,7 +96,7 @@ namespace Temnenkov.SJB.LogBase.Business
 
         internal void Save(PersistentLine pLine)
         {
-            if (_db == null || pLine == null) return;
+            if (_db == null || pLine == null || !pLine.IsValid) return;
 
             var lineTypeEnum = pLine.LineType;
             switch (lineTypeEnum)
@@ -104,17 +104,15 @@ namespace Temnenkov.SJB.LogBase.Business
                 case LineTypeEnum.Normal:
                     {
                         var line = pLine as ProtocolLine;
-                        if (line.IsValid)
-                            _db.ExecuteCommand(Base.Insert,
-                            line.Jid, line.From, line.Message, line.Date, line.Hash, (char)line.LineType);
+                        _db.ExecuteCommand(Base.Insert,
+                        line.Jid, line.From, line.Message, line.Date, line.Hash, (char)line.LineType);
                     }
                     break;
                 case LineTypeEnum.Delay:
                     {
                         var line = pLine as ProtocolDelayLine;
-                        if (line.IsValid)
-                            _db.ExecuteCommand(Base.Insert,
-                            line.Jid, line.From, line.Message, line.Date, line.Hash, (char)line.LineType);
+                        _db.ExecuteCommand(Base.Insert,
+                        line.Jid, line.From, line.Message, line.Date, line.Hash, (char)line.LineType);
                     }
                     break;
                 case LineTypeEnum.TopicChange:
@@ -161,12 +159,13 @@ namespace Temnenkov.SJB.LogBase.Business
         }
     }
 
-    public abstract class PersistentLine 
+    public abstract class PersistentLine
     {
         internal LineTypeEnum LineType { get; private set; }
         internal DateTime Date { get; private set; }
-        internal abstract string Hash {get;}
+        internal abstract string Hash { get; }
         protected abstract string InternalDisplayString();
+        internal abstract bool IsValid { get; }
 
         private PersistentLine()
         {
@@ -204,7 +203,7 @@ namespace Temnenkov.SJB.LogBase.Business
         internal string Jid { get; private set; }
         internal string From { get; private set; }
         internal string Message { get; private set; }
-        internal override string Hash 
+        internal override string Hash
         {
             get
             {
@@ -213,7 +212,7 @@ namespace Temnenkov.SJB.LogBase.Business
             }
         }
 
-        internal bool IsValid
+        internal override bool IsValid
         {
             get
             {
@@ -279,15 +278,23 @@ namespace Temnenkov.SJB.LogBase.Business
             Subject = subject;
         }
 
-		protected override string InternalDisplayString()
-		{
-			return string.Format("{0}{1} изменил топик на {2}",
-							LineType == LineTypeEnum.DeleayTopicChange ? "* " : " ",
-							InAp(Who),
-							InAp(Subject)
-							);
-		}
-	}
+        internal override bool IsValid
+        {
+            get 
+            {
+                return !(string.IsNullOrEmpty(Jid) || string.IsNullOrEmpty(Who) || Subject == null);
+            }
+        }
+
+        protected override string InternalDisplayString()
+        {
+            return string.Format("{0}{1} изменил топик на {2}",
+                            LineType == LineTypeEnum.DeleayTopicChange ? "* " : " ",
+                            InAp(Who),
+                            InAp(Subject)
+                            );
+        }
+    }
 
     public class ChangeSubjectDelayLine : ChangeSubjectLine
     {
@@ -301,13 +308,13 @@ namespace Temnenkov.SJB.LogBase.Business
         internal string Jid { get; private set; }
         internal string Who { get; private set; }
         internal bool IsJoin { get; private set; }
-        internal string IsJoinAsStr 
+        internal string IsJoinAsStr
         {
             get
             {
                 return IsJoin ? "T" : "F";
             }
-        } 
+        }
         internal override string Hash
         {
             get
@@ -325,14 +332,22 @@ namespace Temnenkov.SJB.LogBase.Business
             IsJoin = isJoin;
         }
 
-		protected override string InternalDisplayString()
-		{
-			if (IsJoin)
-				return string.Format("*** к нам пришел {0}",
-							InAp(Who));
-			return string.Format("*** от нас ушел {0}",
-			                     InAp(Who));
-		}
+        internal override bool IsValid
+        {
+            get
+            {
+                return !(string.IsNullOrEmpty(Jid) || string.IsNullOrEmpty(Who));
+            }
+        }
+
+        protected override string InternalDisplayString()
+        {
+            if (IsJoin)
+                return string.Format("*** к нам пришел {0}",
+                            InAp(Who));
+            return string.Format("*** от нас ушел {0}",
+                                 InAp(Who));
+        }
     }
 
 }
