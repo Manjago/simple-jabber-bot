@@ -22,6 +22,12 @@ namespace Temnenkov.SJB.LogBase.Business
             return result;
         }
 
+        public void Save(string dbName)
+        {
+            var dal = new PersistentLineDataLayer(dbName);
+            dal.Save(Lines);
+        }
+
         public string Export(bool withDate)
         {
             var sb = new StringBuilder();

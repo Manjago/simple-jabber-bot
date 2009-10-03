@@ -6,9 +6,10 @@ using Temnenkov.SJB.Common;
 
 namespace Temnenkov.SJB.Database
 {
-    public class Database : IDatabase
+    public class Database : IDatabase, IDisposable
     {
         private readonly SQLiteConnection _connection;
+        private SQLiteTransaction _transaction;
 
         public Database(string fileName)
             : this(Path.GetDirectoryName(Utils.GetExecutablePath()), fileName)
@@ -20,6 +21,7 @@ namespace Temnenkov.SJB.Database
                 fileName += ".sqlite";
             var fullName = Path.Combine(dirName, fileName);
             _connection = new SQLiteConnection(String.Format("Data Source={0}", fullName));
+            _connection.Open();
         }
 
         private static SQLiteParameter GetParameter(object parameter)
@@ -59,40 +61,50 @@ namespace Temnenkov.SJB.Database
 
         public int ExecuteCommand(string sql, params object[] parameters)
         {
-            _connection.Open();
-            try
-            {
-                return ExecuteCommand(_connection, null, sql, parameters);
-            }
-            finally
-            {
-                _connection.Close();
-            }
+            return ExecuteCommand(_connection, _transaction, sql, parameters);
         }
 
         public IDataReader ExecuteReader(string sql, params object[] parameters)
         {
-            _connection.Open();
-                return ExecuteReader(_connection, null, sql, parameters);
-        }
-
-        public void CloseReader()
-        {
-            _connection.Close();
+            return ExecuteReader(_connection, _transaction, sql, parameters);
         }
 
         public bool TableExists(string tableName)
         {
-            _connection.Open();
-            try
+            var test = _connection.GetSchema("Tables").Select(string.Format("Table_Name = '{0}'", tableName));
+            return test.Length != 0;
+        }
+
+        public void BeginTransaction()
+        {
+            _transaction = _connection.BeginTransaction();
+        }
+
+        public void CommitTransaction()
+        {
+            _transaction.Commit();
+            _transaction = null;
+        }
+
+        public void RollbackTransaction()
+        {
+            _transaction.Rollback();
+            _transaction = null;
+        }
+
+        #endregion
+
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            if (_transaction != null)
             {
-                var test = _connection.GetSchema("Tables").Select(string.Format("Table_Name = '{0}'", tableName));
-                return test.Length != 0;
+                _transaction.Rollback();
+                _transaction = null;
             }
-            finally
-            {
+            if (_connection != null && _connection.State == ConnectionState.Open)
                 _connection.Close();
-            }
         }
 
         #endregion

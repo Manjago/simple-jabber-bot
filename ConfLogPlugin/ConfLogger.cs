@@ -26,7 +26,6 @@ namespace Temnenkov.SJB.ConfLogPlugin
         {
             base.Init();
             _dal = new PersistentLineDataLayer();
-            _dal.Check();
         }
 
         void Translator_RoomDelayPublicMessage(object sender, RoomDelayMessageEventArgs e)
