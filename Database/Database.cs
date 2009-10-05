@@ -41,7 +41,7 @@ namespace Temnenkov.SJB.Database
             return null;
         }
 
-        private int ExecuteCommand(SQLiteConnection conn, SQLiteTransaction trans, string sql, params object[] parameters)
+        private static int ExecuteCommand(SQLiteConnection conn, SQLiteTransaction trans, string sql, params object[] parameters)
         {
             var command = new SQLiteCommand(sql, conn, trans);
             foreach (var p in parameters)
@@ -49,9 +49,9 @@ namespace Temnenkov.SJB.Database
             return command.ExecuteNonQuery();
         }
 
-        private SQLiteDataReader ExecuteReader(SQLiteConnection conn, SQLiteTransaction trans, string sql, params object[] parameters)
+        private static SQLiteDataReader ExecuteReader(SQLiteConnection conn, SQLiteTransaction trans, string sql, params object[] parameters)
         {
-            var command = new SQLiteCommand(sql, _connection);
+            var command = new SQLiteCommand(sql, conn, trans);
             foreach (var p in parameters)
                 command.Parameters.Add(GetParameter(p));
             return command.ExecuteReader();
