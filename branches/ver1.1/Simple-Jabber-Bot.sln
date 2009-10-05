@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PingerPlugin", "PingerPlugi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogBase", "LogBase\LogBase.csproj", "{C6AEAB0D-618B-43A7-9D0A-669F16B8AFD1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Launcher", "Launcher\Launcher.csproj", "{E4ABF4EA-C0D5-40B8-BFB9-91F67F8DB93B}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -62,6 +64,10 @@ Global
 		{C6AEAB0D-618B-43A7-9D0A-669F16B8AFD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6AEAB0D-618B-43A7-9D0A-669F16B8AFD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6AEAB0D-618B-43A7-9D0A-669F16B8AFD1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4ABF4EA-C0D5-40B8-BFB9-91F67F8DB93B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4ABF4EA-C0D5-40B8-BFB9-91F67F8DB93B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4ABF4EA-C0D5-40B8-BFB9-91F67F8DB93B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4ABF4EA-C0D5-40B8-BFB9-91F67F8DB93B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
