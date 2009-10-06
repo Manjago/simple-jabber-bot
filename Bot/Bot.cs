@@ -335,6 +335,12 @@ namespace Temnenkov.SJB.Bot
                 _room.PublicMessage(message);
         }
 
+        internal void Kick(string jid, string nick, string reason)
+        {
+            if (_room != null && _room.IsParticipating && _room.JID == jid)
+                _room.Kick(nick, reason);
+        }
+
     }
 }
 

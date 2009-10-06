@@ -14,6 +14,7 @@ namespace Temnenkov.SJB.Common
         void SendRoomPublicMessage(string roomJid, string message);
         void SendRoomPrivateMessage(string roomJid, string to, string message);
         void SendNormalMessage(string to, string message);
+        void Kick(string jid, string nick, string reason);
     }
 
     public class RoomMessageEventArgs : EventArgs
