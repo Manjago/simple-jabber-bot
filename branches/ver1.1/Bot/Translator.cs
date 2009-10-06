@@ -80,6 +80,13 @@ namespace Temnenkov.SJB.Bot
         {
             _bot.SendMessage(to, message);
         }
+
+        public void Kick(string jid, string nick, string reason)
+        {
+            _bot.Kick(jid, nick, reason);
+        }
+
+
         #endregion
     }
 }

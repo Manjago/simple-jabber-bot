@@ -18,7 +18,7 @@ namespace Temnenkov.SJB.PingerPlugin
 
         private static string RoomHelpMessage(string to)
         {
-            return string.Format("Привет, {0}! Используй команды \"zog\",\"ping\", \"log\", \"help\".", to);
+            return string.Format("Привет, {0}! Используй команды \"zog\",\"ping\", \"log\", \"help\", \"харакири\".", to);
         }
 
         private static string NormalHelpMessage(string to)
@@ -80,6 +80,9 @@ namespace Temnenkov.SJB.PingerPlugin
 
             if (IsCommand(e.Message, "log"))
                 Translator.SendRoomPrivateMessage(e.RoomJid, e.From, LogMessage(e.RoomJid));
+
+            if (IsCommand(e.Message, "харакири"))
+                Translator.Kick(e.RoomJid, e.From, "Не знаю даже, что сказать. Я не пишу стихов и не люблю их. Да и к чему слова, когда на небе звезды?");
         }
 
         void Translator_RoomMessage(object sender, RoomMessageEventArgs e)
@@ -94,6 +97,8 @@ namespace Temnenkov.SJB.PingerPlugin
                 Translator.SendRoomPublicMessage(e.RoomJid, ZogMessage(e.From));
             if (IsCommand(e.Message, "log"))
                 Translator.SendRoomPrivateMessage(e.RoomJid, e.From, LogMessage(e.RoomJid));
+            if (IsCommand(e.Message, "харакири"))
+                Translator.Kick(e.RoomJid, e.From, "Не знаю даже, что сказать. Я не пишу стихов и не люблю их. Да и к чему слова, когда на небе звезды?");
         }
 
     }
