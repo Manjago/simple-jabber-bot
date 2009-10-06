@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Threading;
-using System.IO;
-using System.Text;
 using System.Diagnostics;
 
 namespace Temnenkov.SJB.Launcher
@@ -22,7 +19,7 @@ namespace Temnenkov.SJB.Launcher
             {
                 while (OurProcessIsAbsent())
                 {
-                    using (Process p = new Process())
+                    using (var p = new Process())
                     {
                         p.StartInfo.FileName = string.Format("{0}.exe", Module); 
                         p.StartInfo.WorkingDirectory = Application.StartupPath;
@@ -35,13 +32,14 @@ namespace Temnenkov.SJB.Launcher
                 Thread.Sleep(1000 * 60 * 5);
             }
 
+// ReSharper disable FunctionNeverReturns
 		}
+// ReSharper restore FunctionNeverReturns
 
         private static bool OurProcessIsAbsent()
         {
-            foreach (Process p in Process.GetProcesses())
+            foreach (var p in Process.GetProcesses())
             {
-                System.Diagnostics.Debug.WriteLine(p.ProcessName);
                 if (Module.Equals(p.ProcessName))
                     return false;
             }
