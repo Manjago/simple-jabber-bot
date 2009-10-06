@@ -293,7 +293,11 @@ namespace Temnenkov.SJB.Bot
                 room.JID, pres));
             _translator.OnRoomLeaveJoin(new RoomLeaveJoinEventArgs(
                 room.JID.Bare, Settings.NameInRoom, false, DateTime.Now));
-            JoinRoom(string.Format("{0}/{1}", Settings.RoomJid, Settings.NameInRoom));
+			if (!JoinRoom(string.Format("{0}/{1}", Settings.RoomJid, Settings.NameInRoom)))
+			{
+				Logger.Log(LogType.Warn, "can't join in room after leave");
+				Environment.Exit(-3);
+			}
         }
 
     	static void RoomOnAdminMessage(object sender, Message msg)
@@ -335,18 +339,20 @@ namespace Temnenkov.SJB.Bot
 }
 
 
-// toDO dirty log clean log
 
-// toDO convert base - 1.hash 2. structure
-// todo base check const
 
+//toDO my sqlite log
+//toDO mprove logging
+
+//toDO dirty log clean log
+//todo base check const
 //toDo arch rebuild 
 //todo localization
 //toDo prevent doubling of delayed messages
 //toDo multiple channels
 //toDo not use msg.X
 //toDo improve external Application for unload Log
-//toDO mprove logging
+//toDO fix leaving channel after replace connection
 //toDo refactoring
 //toDo release ver 1.0
 
