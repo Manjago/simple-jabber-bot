@@ -22,7 +22,15 @@ namespace Temnenkov.SJB.LogBase.Business
             return result;
         }
 
-        public void Save(string dbName)
+		public static Protocol Find(PersistentLineDataLayer dal, string jid,
+			string pattern)
+		{
+			var result = new Protocol();
+			dal.Find(result.Lines, jid, pattern);
+			return result;
+		}
+
+		public void Save(string dbName)
         {
             var dal = new PersistentLineDataLayer(dbName);
             dal.Save(Lines);

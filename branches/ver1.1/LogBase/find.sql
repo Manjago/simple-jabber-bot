@@ -1,0 +1,1 @@
+SELECT [Date], [From], [Message], [Type], [Jid] from [Log] WHERE [Jid] = ? AND lower([Message]) like ? ORDER BY [Id] LIMIT 100
