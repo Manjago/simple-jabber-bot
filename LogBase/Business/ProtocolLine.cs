@@ -171,6 +171,18 @@ namespace Temnenkov.SJB.LogBase.Business
             }
         }
 
+		internal void Find(System.Collections.Generic.List<PersistentLine> list, string jid, string pattern)
+		{
+			using (var db = CreateDatabase())
+			{
+				using (var reader = db.ExecuteReader(Base.Find, jid, string.Format("%{0}%", pattern))) 
+				{
+					while (reader.Read())
+						list.Add(Create(reader));
+				}
+			}
+		}
+
         internal void Save(System.Collections.Generic.List<PersistentLine> Lines)
         {
             using (var db = CreateDatabase())
@@ -186,7 +198,8 @@ namespace Temnenkov.SJB.LogBase.Business
         {
             throw new NotImplementedException();
         }
-    }
+
+	}
 
     public abstract class PersistentLine
     {

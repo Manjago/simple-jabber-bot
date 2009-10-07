@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="create.sql" />
+    <None Include="find.sql" />
     <None Include="getlog.sql" />
     <None Include="insert.sql" />
   </ItemGroup>

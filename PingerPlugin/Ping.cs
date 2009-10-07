@@ -18,7 +18,7 @@ namespace Temnenkov.SJB.PingerPlugin
 
         private static string RoomHelpMessage(string to)
         {
-            return string.Format("Привет, {0}! Используй команды \"zog\",\"ping\", \"log\", \"help\", \"харакири\".", to);
+			return string.Format("Привет, {0}! Используй команды \"zog\",\"ping\", \"log\", \"help\", \"харакири\",\"find(пробел)(слово)\".", to);
         }
 
         private static string NormalHelpMessage(string to)
@@ -38,20 +38,34 @@ namespace Temnenkov.SJB.PingerPlugin
 
         private static string LogMessage(string jid)
         {
-            var dal = new PersistentLineDataLayer();
-
             return Protocol.Load(new PersistentLineDataLayer(), 
                 jid,
                 DateTime.Now.AddDays(-1),
                 DateTime.Now.AddDays(1)).Export(true); 
         }
 
+		private static string FindMessage(string jid, string what)
+		{
+			return Protocol.Find(new PersistentLineDataLayer(), jid, what).Export(true); 
+		}
+
         private static bool IsCommand(string message, string cmd)
         {
             return !string.IsNullOrEmpty(message) && message.Equals(cmd, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        void Translator_NormalMessage(object sender, NormalMessageEventArgs e)
+		private static bool IsTwinCommand(string message, string cmd, out string operand)
+		{
+			operand = string.Empty;
+			if (string.IsNullOrEmpty(message)) return false;
+			var twins = message.Split(' ');
+			if (twins.Length != 2) return false;
+			if (!IsCommand(twins[0], cmd)) return false;
+			operand = twins[1];
+			return true;
+		}
+
+		void Translator_NormalMessage(object sender, NormalMessageEventArgs e)
         {
             if (IsCommand(e.Message, "help"))
                 Translator.SendNormalMessage(e.From, NormalHelpMessage(e.From));
@@ -83,7 +97,13 @@ namespace Temnenkov.SJB.PingerPlugin
 
             if (IsCommand(e.Message, "харакири"))
                 Translator.Kick(e.RoomJid, e.From, "Не знаю даже, что сказать. Я не пишу стихов и не люблю их. Да и к чему слова, когда на небе звезды?");
-        }
+
+			{
+				string what;
+				if (IsTwinCommand(e.Message, "find", out what))
+					Translator.SendRoomPrivateMessage(e.RoomJid, e.From, FindMessage(e.RoomJid, what));
+			}
+		}
 
         void Translator_RoomMessage(object sender, RoomMessageEventArgs e)
         {
@@ -99,7 +119,12 @@ namespace Temnenkov.SJB.PingerPlugin
                 Translator.SendRoomPrivateMessage(e.RoomJid, e.From, LogMessage(e.RoomJid));
             if (IsCommand(e.Message, "харакири"))
                 Translator.Kick(e.RoomJid, e.From, "Не знаю даже, что сказать. Я не пишу стихов и не люблю их. Да и к чему слова, когда на небе звезды?");
-        }
+			{
+				string what;
+				if (IsTwinCommand(e.Message, "find", out what))
+					Translator.SendRoomPrivateMessage(e.RoomJid, e.From, FindMessage(e.RoomJid, what));
+			}
+		}
 
     }
 }
