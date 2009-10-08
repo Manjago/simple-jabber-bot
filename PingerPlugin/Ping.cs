@@ -46,7 +46,8 @@ namespace Temnenkov.SJB.PingerPlugin
 
 		private static string FindMessage(string jid, string what)
 		{
-			return Protocol.Find(new PersistentLineDataLayer(), jid, what).Export(true); 
+			var result = Protocol.Find(new PersistentLineDataLayer(), jid, what).Export(true);
+			return string.Format("Результаты поиска для \"{0}\":\r\n{1}", what, string.IsNullOrEmpty(result) ? "ничего не найдено" : result);
 		}
 
         private static bool IsCommand(string message, string cmd)

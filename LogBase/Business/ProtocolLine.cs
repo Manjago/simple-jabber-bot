@@ -395,14 +395,14 @@ namespace Temnenkov.SJB.LogBase.Business
             }
         }
 
-        protected override string InternalDisplayString()
-        {
-            if (IsJoin)
-                return string.Format("*** к нам пришел {0}",
-                            InAp(Who));
-            return string.Format("*** от нас ушел {0}",
-                                 InAp(Who));
-        }
+		protected override string InternalDisplayString()
+		{
+			if (IsJoin)
+				return string.Format("*** к нам пришел {0}",
+							InAp(Who));
+			return string.Format("*** {0} в жестокий внешний мир",
+								 InAp(Who));
+		}
     }
 
 }
