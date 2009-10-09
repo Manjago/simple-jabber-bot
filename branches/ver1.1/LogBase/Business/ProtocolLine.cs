@@ -400,7 +400,7 @@ namespace Temnenkov.SJB.LogBase.Business
 			if (IsJoin)
 				return string.Format("*** к нам пришел {0}",
 							InAp(Who));
-			return string.Format("*** {0} в жестокий внешний мир",
+			return string.Format("*** {0} временно ушел в жестокий внешний мир",
 								 InAp(Who));
 		}
     }
