@@ -175,7 +175,7 @@ namespace Temnenkov.SJB.LogBase.Business
 		{
 			using (var db = CreateDatabase())
 			{
-				using (var reader = db.ExecuteReader(Base.Find, jid, string.Format("%{0}%", pattern))) 
+				using (var reader = db.ExecuteReader(Base.Find, jid, pattern)) 
 				{
 					while (reader.Read())
 						list.Add(Create(reader));

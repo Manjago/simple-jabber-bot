@@ -111,4 +111,22 @@ namespace Temnenkov.SJB.Database
 
 
     }
+
+	/// <summary>
+	/// SELECT * FROM foo WHERE name REGEXP '$bar'
+	/// SELECT * FROM foo WHERE REGEXP('$bar', name)
+	/// 
+	/// </summary>
+	[SQLiteFunction(Name = "REGEXP", Arguments = 2, FuncType = FunctionType.Scalar)]
+	class MyRegEx : SQLiteFunction
+	{
+		public override object Invoke(object[] args)
+		{
+		  //	return System.Text.RegularExpressions.Regex.IsMatch(Convert.ToString(args[1]), Convert.ToString(args[0]));
+			var msg = (Convert.ToString(args[1]) ?? string.Empty).ToLowerInvariant();
+			var pattern = (Convert.ToString(args[0]) ?? string.Empty).ToLowerInvariant();
+			return msg.IndexOf(pattern) >= 0;
+		}
+	}
+
 }
