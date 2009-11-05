@@ -1,5 +1,6 @@
 ﻿using System;
 using Temnenkov.SJB.Common;
+using System.ServiceProcess;
 
 namespace Temnenkov.SJB.Bot
 {
@@ -7,27 +8,34 @@ namespace Temnenkov.SJB.Bot
     {
         internal static void Main(string[] args)
         {
-            Logger.Log(LogType.Info, "Starting in console mode");
 
-            var bot = new Bot();
-            if (bot.Connect())
+            if (args.Length > 0 && args[0].Equals("console", StringComparison.CurrentCultureIgnoreCase))
             {
-                Logger.Log(LogType.Info, "Successfully connected");
+                Logger.Log(LogType.Info, "Starting in console mode");
 
-                if (bot.JoinRoom(string.Format("{0}/{1}", Settings.RoomJid, Settings.NameInRoom)))
+                var bot = new Bot();
+                if (bot.Connect())
                 {
-                    Console.WriteLine("Type \"quit\" to end.");
-                    while (!Console.ReadLine().Equals("quit", StringComparison.InvariantCultureIgnoreCase))
+                    Logger.Log(LogType.Info, "Successfully connected");
+
+                    if (bot.JoinRoom(string.Format("{0}/{1}", Settings.RoomJid, Settings.NameInRoom)))
+                    {
                         Console.WriteLine("Type \"quit\" to end.");
+                        while (!Console.ReadLine().Equals("quit", StringComparison.InvariantCultureIgnoreCase))
+                            Console.WriteLine("Type \"quit\" to end.");
+                    }
+                    else
+                        Logger.Log(LogType.Warn, "Fail join room");
                 }
                 else
-                    Logger.Log(LogType.Warn, "Fail join room");
+                    Logger.Log(LogType.Warn, "Fail connect");
+
+                Logger.Log(LogType.Info, "Quitting from console mode");
+                bot.Disconnect();
             }
             else
-                Logger.Log(LogType.Warn, "Fail connect");
+                ServiceBase.Run(new ServiceBase[] { new BotAsService() });
 
-            Logger.Log(LogType.Info, "Quitting from console mode");
-            bot.Disconnect();
         }
     }
 }
