@@ -15,6 +15,15 @@ namespace Temnenkov.SJB.Launcher
 		[STAThread]
 		static void Main()
 		{
+            bool isOwned;
+			var appStartMutex = new Mutex(
+			true,
+			"Temnenkov.SJB.Bot.Launcher",
+			out isOwned
+			);
+
+			if (!isOwned) return;
+
             while (true)
             {
                 while (OurProcessIsAbsent())
