@@ -9,7 +9,7 @@ namespace Temnenkov.SJB.Bot
         internal static void Main(string[] args)
         {
 
-            if (args.Length > 0 && !args[0].Equals("srv", StringComparison.CurrentCultureIgnoreCase))
+            if (!(args.Length > 0 && args[0].Equals("srv", StringComparison.CurrentCultureIgnoreCase)))
             {
                 Logger.Log(LogType.Info, "Starting in console mode");
 
