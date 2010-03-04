@@ -245,7 +245,7 @@ namespace Temnenkov.SJB.Bot
             if (result)
             {
                 Logger.Log(LogType.Info, String.Format("Join in room {0} sucessfully", jid));
-                _room.PublicMessage("Превед!");
+                _room.PublicMessage("Превед! Теперь find ищет по регулярным выражениям!");
 
 
             }
