@@ -44,6 +44,12 @@ namespace Temnenkov.SJB.PingerPlugin
                 DateTime.Now.AddDays(1)).Export(true); 
         }
 
+		private static string OkMessage(string jid, string cmd)
+		{
+			return string.Format("Команда {0} в комнате {1} принята, время сервера: {2}",
+			                     cmd, jid, DateTime.Now.ToShortTimeString());
+		}
+
 		private static string FindMessage(string jid, string what)
 		{
 			var result = Protocol.Find(new PersistentLineDataLayer(), jid, what).Export(true);
@@ -93,16 +99,22 @@ namespace Temnenkov.SJB.PingerPlugin
             if (IsCommand(e.Message, "zog"))
                 Translator.SendRoomPrivateMessage(e.RoomJid, e.From, ZogMessage(e.From));
 
-            if (IsCommand(e.Message, "log"))
-                Translator.SendRoomPrivateMessage(e.RoomJid, e.From, LogMessage(e.RoomJid));
+			if (IsCommand(e.Message, "log"))
+			{
+				Translator.SendRoomPrivateMessage(e.RoomJid, e.From, OkMessage(e.RoomJid, "log"));
+				Translator.SendRoomPrivateMessage(e.RoomJid, e.From, LogMessage(e.RoomJid));
+			}
 
-            if (IsCommand(e.Message, "харакири"))
+        	if (IsCommand(e.Message, "харакири"))
                 Translator.Kick(e.RoomJid, e.From, "Не знаю даже, что сказать. Я не пишу стихов и не люблю их. Да и к чему слова, когда на небе звезды?");
 
 			{
 				string what;
 				if (IsTwinCommand(e.Message, "find", out what))
+				{
+					Translator.SendRoomPrivateMessage(e.RoomJid, e.From, OkMessage(e.RoomJid, "find"));
 					Translator.SendRoomPrivateMessage(e.RoomJid, e.From, FindMessage(e.RoomJid, what));
+				}
 			}
 		}
 
@@ -117,13 +129,19 @@ namespace Temnenkov.SJB.PingerPlugin
             if (IsCommand(e.Message, "zog"))
                 Translator.SendRoomPublicMessage(e.RoomJid, ZogMessage(e.From));
             if (IsCommand(e.Message, "log"))
-                Translator.SendRoomPrivateMessage(e.RoomJid, e.From, LogMessage(e.RoomJid));
+			{
+				Translator.SendRoomPrivateMessage(e.RoomJid, e.From, OkMessage(e.RoomJid, "log"));
+				Translator.SendRoomPrivateMessage(e.RoomJid, e.From, LogMessage(e.RoomJid));
+			}
             if (IsCommand(e.Message, "харакири"))
                 Translator.Kick(e.RoomJid, e.From, "Не знаю даже, что сказать. Я не пишу стихов и не люблю их. Да и к чему слова, когда на небе звезды?");
 			{
 				string what;
 				if (IsTwinCommand(e.Message, "find", out what))
+				{
+					Translator.SendRoomPrivateMessage(e.RoomJid, e.From, OkMessage(e.RoomJid, "find"));
 					Translator.SendRoomPrivateMessage(e.RoomJid, e.From, FindMessage(e.RoomJid, what));
+				}
 			}
 		}
 
