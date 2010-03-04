@@ -1,1 +1,1 @@
-SELECT [Date], [From], [Message], [Type], [Jid] from [Log] WHERE [Jid] = ? AND [Message] REGEXP ? ORDER BY [Id] LIMIT 100
+SELECT [Date], [From], [Message], [Type], [Jid] FROM (SELECT [Date], [From], [Message], [Type], [Jid], [Id] from [Log] WHERE [Jid] = ? AND [Message] REGEXP ? ORDER BY [Id] DESC LIMIT 100) ORDER BY [Id]

@@ -123,9 +123,14 @@ namespace Temnenkov.SJB.Database
 		public override object Invoke(object[] args)
 		{
 		  //	return System.Text.RegularExpressions.Regex.IsMatch(Convert.ToString(args[1]), Convert.ToString(args[0]));
+			/*
 			var msg = (Convert.ToString(args[1]) ?? string.Empty).ToLowerInvariant();
 			var pattern = (Convert.ToString(args[0]) ?? string.Empty).ToLowerInvariant();
 			return msg.IndexOf(pattern) >= 0;
+			 **/
+			var msg = Convert.ToString(args[1]) ?? string.Empty;
+			var pattern = Convert.ToString(args[0]) ?? string.Empty;
+			return System.Text.RegularExpressions.Regex.IsMatch(msg, pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 		}
 	}
 
