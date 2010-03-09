@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Temnenkov.SJB.Common;
 using Temnenkov.SJB.LogBase.Business;
 
@@ -6,7 +7,10 @@ namespace Temnenkov.SJB.PingerPlugin
 {
     public sealed class Ping : Plugin
     {
-        public string OperatorJid { get; set; }
+
+		private static IFormatProvider _dateFrmt = CultureInfo.CreateSpecificCulture("ru-RU");
+
+		public string OperatorJid { get; set; }
 
         public Ping(ITranslator translator)
             : base(translator)
@@ -14,11 +18,12 @@ namespace Temnenkov.SJB.PingerPlugin
             Translator.RoomPublicMessage += Translator_RoomMessage;
             Translator.RoomPrivateMessage += Translator_RoomPrivateMessage;
             Translator.NormalMessage += Translator_NormalMessage;
+
         }
 
         private static string RoomHelpMessage(string to)
         {
-			return string.Format("Привет, {0}! Используй команды \"zog\",\"ping\", \"log\", \"help\", \"харакири\",\"find(пробел)(слово)\".", to);
+			return string.Format("Привет, {0}! Используй команды \"zog\",\"ping\", \"log\", \"log <дата в формате DD.MM.YYYY>\",\"help\", \"харакири\",\"find(пробел)(регулярное выражение)\".", to);
         }
 
         private static string NormalHelpMessage(string to)
@@ -44,10 +49,33 @@ namespace Temnenkov.SJB.PingerPlugin
                 DateTime.Now.AddDays(1)).Export(true); 
         }
 
+		private static string LogMessage(string jid, string dateTimeStr)
+		{
+			DateTime d;
+			try
+			{
+				d = DateTime.ParseExact(dateTimeStr, "dd.MM.yyyy", _dateFrmt);
+			}
+			catch(ArgumentNullException)
+			{
+				return
+					string.Format("Недопустимый аргумент команды. В качестве аргумента должна использоваться строка вида DD.MM.YYYY");
+			}
+			catch(FormatException)
+			{
+				return
+					string.Format("Недопустимый аргумент команды. В качестве аргумента должна использоваться строка вида DD.MM.YYYY");
+			}
+			return Protocol.Load(new PersistentLineDataLayer(),
+				jid,
+				d,
+				d.AddDays(1)).Export(true);
+		}
+
 		private static string OkMessage(string jid, string cmd)
 		{
 			return string.Format("Команда {0} в комнате {1} принята, время сервера: {2}",
-			                     cmd, jid, DateTime.Now.ToShortTimeString());
+			                     cmd, jid, DateTime.Now.ToLongTimeString());
 		}
 
 		private static string FindMessage(string jid, string what)
@@ -99,6 +127,15 @@ namespace Temnenkov.SJB.PingerPlugin
             if (IsCommand(e.Message, "zog"))
                 Translator.SendRoomPrivateMessage(e.RoomJid, e.From, ZogMessage(e.From));
 
+			{
+				string what;
+				if (IsTwinCommand(e.Message, "log", out what))
+				{
+					Translator.SendRoomPrivateMessage(e.RoomJid, e.From, OkMessage(e.RoomJid, e.Message));
+					Translator.SendRoomPrivateMessage(e.RoomJid, e.From, LogMessage(e.RoomJid, what));
+				}
+			}
+
 			if (IsCommand(e.Message, "log"))
 			{
 				Translator.SendRoomPrivateMessage(e.RoomJid, e.From, OkMessage(e.RoomJid, "log"));
@@ -124,11 +161,23 @@ namespace Temnenkov.SJB.PingerPlugin
 
             if (IsCommand(e.Message, "help"))
                 Translator.SendRoomPublicMessage(e.RoomJid, RoomHelpMessage(e.From));
+
             if (IsCommand(e.Message, "ping"))
                 Translator.SendRoomPrivateMessage(e.RoomJid, e.From, PingMessage(e.From));
+
             if (IsCommand(e.Message, "zog"))
                 Translator.SendRoomPublicMessage(e.RoomJid, ZogMessage(e.From));
-            if (IsCommand(e.Message, "log"))
+
+			{
+				string what;
+				if (IsTwinCommand(e.Message, "log", out what))
+				{
+					Translator.SendRoomPrivateMessage(e.RoomJid, e.From, OkMessage(e.RoomJid, e.Message));
+					Translator.SendRoomPrivateMessage(e.RoomJid, e.From, LogMessage(e.RoomJid, what));
+				}
+			}
+
+			if (IsCommand(e.Message, "log"))
 			{
 				Translator.SendRoomPrivateMessage(e.RoomJid, e.From, OkMessage(e.RoomJid, "log"));
 				Translator.SendRoomPrivateMessage(e.RoomJid, e.From, LogMessage(e.RoomJid));
