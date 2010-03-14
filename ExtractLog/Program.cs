@@ -40,9 +40,9 @@ namespace Temnenkov.SJB.ExtractLog
                 var secondDate = selectDate.Date.AddDays(1).AddMilliseconds(-1);
 
                 var resFile = Path.Combine(Path.GetDirectoryName(Utils.GetExecutablePath()), "exp.log");
-                using (var sw = new StreamWriter(resFile, false, Encoding.GetEncoding(1251)))
+                using (var sw = new StreamWriter(resFile, false, Encoding.GetEncoding(866)))
                     sw.Write(Protocol.Load(new PersistentLineDataLayer(),
-                        jid, firstDate, secondDate).Export(false));
+                        jid, firstDate, secondDate).Export(true));
             }
 
         }
