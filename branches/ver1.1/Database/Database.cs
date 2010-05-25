@@ -134,7 +134,7 @@ namespace Temnenkov.SJB.Database
             {
                 return System.Text.RegularExpressions.Regex.IsMatch(msg, pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
             }
-            catch(ArgumentException)
+            catch(Exception)
             {
                 return false;
             }
