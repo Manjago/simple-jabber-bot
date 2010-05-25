@@ -130,7 +130,14 @@ namespace Temnenkov.SJB.Database
 			 **/
 			var msg = Convert.ToString(args[1]) ?? string.Empty;
 			var pattern = Convert.ToString(args[0]) ?? string.Empty;
-			return System.Text.RegularExpressions.Regex.IsMatch(msg, pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            try
+            {
+                return System.Text.RegularExpressions.Regex.IsMatch(msg, pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            }
+            catch(ArgumentException)
+            {
+                return false;
+            }
 		}
 	}
 
