@@ -1,0 +1,1 @@
+Simple Jabber Bot
